@@ -1,0 +1,21 @@
+﻿{
+    "TicketKey":  "PMS-1457",
+    "Source":  "offline",
+    "Programs":  [
+                     {
+                         "Raw":  "REF IDE 621",
+                         "Source":  "index"
+                     },
+                     {
+                         "Raw":  "REF IDE 621",
+                         "Source":  "notes"
+                     }
+                 ],
+    "Tables":  [
+
+               ],
+    "Keywords":  [
+
+                 ],
+    "Symptom":  "Caution forfait ski automatique St Moritz - 25 CHF cloture nuit"
+}

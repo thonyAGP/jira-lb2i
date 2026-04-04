@@ -1,0 +1,361 @@
+{
+    "Attachments":  [
+
+                    ],
+    "Program":  "PVE IDE 379",
+    "LastAnalysis":  "2026-01-29",
+    "Source":  "index",
+    "Keywords":  [
+                     {
+                         "Category":  "calcul",
+                         "Keyword":  "calcul"
+                     },
+                     {
+                         "Category":  "date",
+                         "Keyword":  "date"
+                     },
+                     {
+                         "Category":  "import",
+                         "Keyword":  "fichier"
+                     },
+                     {
+                         "Category":  "import",
+                         "Keyword":  "import"
+                     },
+                     {
+                         "Category":  "calcul",
+                         "Keyword":  "montant"
+                     },
+                     {
+                         "Category":  "import",
+                         "Keyword":  "na"
+                     }
+                 ],
+    "Symptom":  "POS Edition Income - Ventes GP multi-services absentes de la table tempo",
+    "Tables":  [
+
+               ],
+    "Status":  "en-cours",
+    "Summary":  "POS Edition Income - Ventes GP multi-services absentes de la table tempo",
+    "RootCause":  "",
+    "CreatedDate":  "2025-12-01",
+    "Programs":  [
+                     {
+                         "Verified":  false,
+                         "Raw":  "ADH IDE 0",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ADH IDE 27",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ADH IDE 38",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "CAB IDE 19",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "EXB IDE 26",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "EXF IDE 40",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "GES IDE 24",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "GES IDE 79",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "MAI IDE 83",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Menu Service",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Menu Services",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ort IDE 27",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ort IDE 350",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ort IDE 368",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ort IDE 369",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ort IDE 370",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ort IDE 377",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ort IDE 378",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ort IDE 38",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ort IDE 383",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ort IDE 386",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "ort IDE 391",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 134",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 245",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 251",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 256",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 260",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 261",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 318",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBP IDE 244",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBP IDE 245",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBP IDE 246",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBP IDE 250",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBP IDE 251",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBP IDE 97",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Prg_27",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Prg_351",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Prg_371",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Prg_372",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Prg_373",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Prg_38",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Prg_380",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Prg_381",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Prg_386",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Prg_389",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Prg_394",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PVE IDE 358",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PVE IDE 379",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PVE IDE 380",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PVE IDE 381",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PVE IDE 388",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PVE IDE 389",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PVE IDE 394",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PVE IDE 397",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PVE IDE 402",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PVE IDE 41",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "REF IDE 351",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "REF IDE 380",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "REF IDE 381",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "REF IDE 386",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "REF IDE 389",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "VIL IDE 112",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "VIL IDE 114",
+                         "Source":  "jira"
+                     }
+                 ],
+    "TicketKey":  "PMS-1427",
+    "ExtractedAt":  "2026-01-29T12:34:22.2129487+01:00"
+}

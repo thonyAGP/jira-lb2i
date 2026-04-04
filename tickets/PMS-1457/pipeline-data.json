@@ -1,0 +1,94 @@
+{
+    "flow":  {
+                 "stats":  {
+                               "programsTraced":  0,
+                               "callTasks":  0,
+                               "expressions":  0
+                           },
+                 "diagram":  "```\nFLUX PROGRAMMES MAGIC\n=====================\n\n```\r\n"
+             },
+    "pipeline":  {
+                     "score":  "2/6",
+                     "phases":  {
+                                    "diagnostic":  {
+                                                       "completed":  false
+                                                   },
+                                    "patterns":  {
+                                                     "completed":  false
+                                                 },
+                                    "expressions":  {
+                                                        "completed":  false
+                                                    },
+                                    "context":  {
+                                                    "completed":  true
+                                                },
+                                    "flowTrace":  {
+                                                      "completed":  false
+                                                  },
+                                    "localization":  {
+                                                         "completed":  true
+                                                     }
+                                }
+                 },
+    "ticketKey":  "PMS-1457",
+    "version":  "2.0",
+    "generatedAt":  "2026-01-29T12:19:34.8638481+01:00",
+    "patterns":  {
+                     "matchedCount":  0,
+                     "minimumScore":  2
+                 },
+    "template":  "TEMPLATE-ANALYSIS.md",
+    "expressions":  {
+                        "stats":  {
+                                      "Failed":  0,
+                                      "Decoded":  0,
+                                      "Total":  0
+                                  },
+                        "decodedCount":  0,
+                        "count":  0
+                    },
+    "programs":  [
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "REF",
+                         "name":  "Cloture OB",
+                         "ide":  621,
+                         "programId":  620,
+                         "publicName":  "ClotureOB",
+                         "raw":  "REF IDE 621"
+                     }
+                 ],
+    "context":  {
+                    "source":  "offline",
+                    "summary":  "Caution forfait ski automatique St Moritz - 25 CHF cloture nuit",
+                    "createdDate":  "",
+                    "ticketKey":  "PMS-1457",
+                    "rootCause":  "",
+                    "lastAnalysis":  "2026-01-22",
+                    "symptom":  "Caution forfait ski automatique St Moritz - 25 CHF cloture nuit",
+                    "keywords":  [
+
+                                 ],
+                    "jiraUrl":  "https://clubmed.atlassian.net/browse/PMS-1457",
+                    "status":  "idée",
+                    "program":  "REF IDE 621"
+                },
+    "validation":  {
+                       "HasVerifiedIDE":  true,
+                       "Warnings":  [
+
+                                    ],
+                       "HasDiagram":  true,
+                       "HasContext":  true,
+                       "HasPatterns":  false,
+                       "HasPrograms":  true,
+                       "Errors":  [
+
+                                  ],
+                       "HasExpressions":  false,
+                       "HasFlow":  false,
+                       "Score":  "2/6",
+                       "HasDecodedExpr":  false
+                   }
+}

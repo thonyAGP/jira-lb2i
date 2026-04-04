@@ -1,0 +1,104 @@
+{
+    "Attachments":  [
+
+                    ],
+    "Program":  "PBG IDE 56",
+    "LastAnalysis":  "2026-01-29",
+    "Source":  "index",
+    "Keywords":  [
+                     {
+                         "Category":  "date",
+                         "Keyword":  "arrivee"
+                     },
+                     {
+                         "Category":  "calcul",
+                         "Keyword":  "calcul"
+                     },
+                     {
+                         "Category":  "affichage",
+                         "Keyword":  "ecran"
+                     },
+                     {
+                         "Category":  "date",
+                         "Keyword":  "heure"
+                     },
+                     {
+                         "Category":  "import",
+                         "Keyword":  "na"
+                     },
+                     {
+                         "Category":  "date",
+                         "Keyword":  "time"
+                     }
+                 ],
+    "Symptom":  "Validation qualites GO - Comptage JH selon heure pays (14h seuil)",
+    "Tables":  [
+                   {
+                       "Raw":  "cafil009_dat",
+                       "Source":  "jira"
+                   }
+               ],
+    "Status":  "en-cours",
+    "Summary":  "Validation qualites GO - Comptage JH selon heure pays (14h seuil)",
+    "RootCause":  "",
+    "CreatedDate":  "2025-11-24",
+    "Programs":  [
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 335",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 410",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 56",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 59",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 612",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 650",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 664",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 750",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 751",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "programme Magic",
+                         "Source":  "jira"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "Programme principal",
+                         "Source":  "jira"
+                     }
+                 ],
+    "TicketKey":  "PMS-1419",
+    "ExtractedAt":  "2026-01-29T12:34:51.0641407+01:00"
+}

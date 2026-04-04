@@ -1,0 +1,649 @@
+{
+    "flow":  {
+                 "stats":  {
+                               "programsTraced":  0,
+                               "callTasks":  0,
+                               "expressions":  0
+                           },
+                 "diagram":  "```\nFLUX PROGRAMMES MAGIC\n=====================\n\n```"
+             },
+    "pipeline":  {
+                     "score":  "3/6",
+                     "phases":  {
+                                    "diagnostic":  {
+                                                       "completed":  false
+                                                   },
+                                    "patterns":  {
+                                                     "completed":  true
+                                                 },
+                                    "expressions":  {
+                                                        "completed":  false
+                                                    },
+                                    "context":  {
+                                                    "completed":  true
+                                                },
+                                    "flowTrace":  {
+                                                      "completed":  false
+                                                  },
+                                    "localization":  {
+                                                         "completed":  true
+                                                     }
+                                }
+                 },
+    "ticketKey":  "PMS-1427",
+    "version":  "2.0",
+    "generatedAt":  "2026-01-29T12:36:32.5131790+01:00",
+    "patterns":  {
+                     "matchedCount":  2,
+                     "minimumScore":  2
+                 },
+    "template":  "TEMPLATE-ANALYSIS.md",
+    "expressions":  {
+                        "stats":  {
+                                      "Failed":  0,
+                                      "Decoded":  0,
+                                      "Total":  0
+                                  },
+                        "decodedCount":  0,
+                        "count":  0
+                    },
+    "programs":  [
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "ADH",
+                         "name":  "Deversement Transaction /PMS14",
+                         "ide":  0,
+                         "programId":  330,
+                         "publicName":  "",
+                         "raw":  "ADH IDE 0"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "ADH",
+                         "name":  "Separation",
+                         "ide":  27,
+                         "programId":  27,
+                         "publicName":  "Separation",
+                         "raw":  "ADH IDE 27"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "ADH",
+                         "name":  "Program_38",
+                         "ide":  38,
+                         "programId":  38,
+                         "publicName":  "",
+                         "raw":  "ADH IDE 38"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "CAB",
+                         "name":  "  Test si cloture en cours",
+                         "ide":  19,
+                         "programId":  27,
+                         "publicName":  "",
+                         "raw":  "CAB IDE 19"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "EXB",
+                         "name":  "Detail Excursion",
+                         "ide":  26,
+                         "programId":  38,
+                         "publicName":  "",
+                         "raw":  "EXB IDE 26"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "EXF",
+                         "name":  " Annulation Ventes",
+                         "ide":  40,
+                         "programId":  27,
+                         "publicName":  "",
+                         "raw":  "EXF IDE 40"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "GES",
+                         "name":  " Bi  Selection des devises",
+                         "ide":  24,
+                         "programId":  38,
+                         "publicName":  "",
+                         "raw":  "GES IDE 24"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "GES",
+                         "name":  "CM  Menu Services village",
+                         "ide":  79,
+                         "programId":  27,
+                         "publicName":  "",
+                         "raw":  "GES IDE 79"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "MAI",
+                         "name":  "Contr├┤le de Caract├¿re",
+                         "ide":  83,
+                         "programId":  38,
+                         "publicName":  "",
+                         "raw":  "MAI IDE 83"
+                     },
+                     {
+                         "source":  "kb-fuzzy",
+                         "verified":  true,
+                         "project":  "PVE",
+                         "name":  "Menu Service cloture v2",
+                         "ide":  397,
+                         "programId":  389,
+                         "publicName":  "",
+                         "raw":  "Menu Service"
+                     },
+                     {
+                         "source":  "kb-fuzzy",
+                         "verified":  true,
+                         "project":  "PVE",
+                         "name":  "Menu Service cloture",
+                         "ide":  402,
+                         "programId":  394,
+                         "publicName":  "",
+                         "raw":  "Menu Service"
+                     },
+                     {
+                         "source":  "not-found",
+                         "verified":  false,
+                         "project":  "",
+                         "name":  "",
+                         "ide":  0,
+                         "programId":  0,
+                         "publicName":  "",
+                         "raw":  "ort IDE 27"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBG",
+                         "name":  "GM Presents",
+                         "ide":  134,
+                         "programId":  373,
+                         "publicName":  "",
+                         "raw":  "PBG IDE 134"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBG",
+                         "name":  "Edition Nouv. Prestations",
+                         "ide":  245,
+                         "programId":  380,
+                         "publicName":  "",
+                         "raw":  "PBG IDE 245"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBG",
+                         "name":  "Import - MOD",
+                         "ide":  251,
+                         "programId":  394,
+                         "publicName":  "",
+                         "raw":  "PBG IDE 251"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBG",
+                         "name":  "Import - FRA PRESTATION",
+                         "ide":  256,
+                         "programId":  389,
+                         "publicName":  "",
+                         "raw":  "PBG IDE 256"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBG",
+                         "name":  "Impression Ezcard modifiees",
+                         "ide":  260,
+                         "programId":  372,
+                         "publicName":  "",
+                         "raw":  "PBG IDE 260"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBG",
+                         "name":  "Affichage Ezcard modifiees",
+                         "ide":  261,
+                         "programId":  371,
+                         "publicName":  "",
+                         "raw":  "PBG IDE 261"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBG",
+                         "name":  "Affichage \u0026Version",
+                         "ide":  318,
+                         "programId":  351,
+                         "publicName":  "",
+                         "raw":  "PBG IDE 318"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBP",
+                         "name":  "   Edit journal de police",
+                         "ide":  244,
+                         "programId":  371,
+                         "publicName":  "",
+                         "raw":  "PBP IDE 244"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBP",
+                         "name":  "   Generation Stat",
+                         "ide":  245,
+                         "programId":  372,
+                         "publicName":  "",
+                         "raw":  "PBP IDE 245"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBP",
+                         "name":  "   Edit Stat EOT",
+                         "ide":  246,
+                         "programId":  373,
+                         "publicName":  "",
+                         "raw":  "PBP IDE 246"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBP",
+                         "name":  "Affich present planning GM CL",
+                         "ide":  250,
+                         "programId":  380,
+                         "publicName":  "",
+                         "raw":  "PBP IDE 250"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBP",
+                         "name":  "Imprim GM present planning CL",
+                         "ide":  251,
+                         "programId":  381,
+                         "publicName":  "",
+                         "raw":  "PBP IDE 251"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBP",
+                         "name":  "Preparation ├®tiquettes(Chambre",
+                         "ide":  97,
+                         "programId":  394,
+                         "publicName":  "",
+                         "raw":  "PBP IDE 97"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "Import",
+                         "name":  "Import - client_gm",
+                         "ide":  27,
+                         "programId":  27,
+                         "publicName":  "",
+                         "raw":  "Prg_27"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "Import",
+                         "name":  "Import - pv_sellers_by_week",
+                         "ide":  350,
+                         "programId":  351,
+                         "publicName":  "",
+                         "raw":  "Prg_351"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "PVE",
+                         "name":  "Print Invoice or Ticket",
+                         "ide":  358,
+                         "programId":  351,
+                         "publicName":  "",
+                         "raw":  "Prg_351"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "REF",
+                         "name":  "Browse - erreur_od",
+                         "ide":  351,
+                         "programId":  351,
+                         "publicName":  "oderr",
+                         "raw":  "Prg_351"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "ADH",
+                         "name":  "Transaction Nouv vente PMS-584",
+                         "ide":  0,
+                         "programId":  371,
+                         "publicName":  "",
+                         "raw":  "Prg_371"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "Import",
+                         "name":  "Import - req_type_pb",
+                         "ide":  368,
+                         "programId":  371,
+                         "publicName":  "",
+                         "raw":  "Prg_371"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "PVE",
+                         "name":  "Print Deposit",
+                         "ide":  379,
+                         "programId":  371,
+                         "publicName":  "",
+                         "raw":  "Prg_371"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "ADH",
+                         "name":  " Print ticket vente PMS-584",
+                         "ide":  0,
+                         "programId":  372,
+                         "publicName":  "",
+                         "raw":  "Prg_372"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "Import",
+                         "name":  "Import - req_groups_profile1__",
+                         "ide":  369,
+                         "programId":  372,
+                         "publicName":  "",
+                         "raw":  "Prg_372"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "PVE",
+                         "name":  "Print Stat Ventes *NU*",
+                         "ide":  380,
+                         "programId":  372,
+                         "publicName":  "",
+                         "raw":  "Prg_372"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "ADH",
+                         "name":  "Print creation garanti PMS-584",
+                         "ide":  0,
+                         "programId":  373,
+                         "publicName":  "",
+                         "raw":  "Prg_373"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "Import",
+                         "name":  "Import - req_groups_profile2__",
+                         "ide":  370,
+                         "programId":  373,
+                         "publicName":  "",
+                         "raw":  "Prg_373"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "PVE",
+                         "name":  "Export Insurance",
+                         "ide":  381,
+                         "programId":  373,
+                         "publicName":  "",
+                         "raw":  "Prg_373"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "Import",
+                         "name":  "Import - compte_gm________cgm",
+                         "ide":  38,
+                         "programId":  38,
+                         "publicName":  "",
+                         "raw":  "Prg_38"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "Import",
+                         "name":  "Import - req_type",
+                         "ide":  377,
+                         "programId":  380,
+                         "publicName":  "",
+                         "raw":  "Prg_380"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "PVE",
+                         "name":  "Print Global Income",
+                         "ide":  388,
+                         "programId":  380,
+                         "publicName":  "",
+                         "raw":  "Prg_380"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "REF",
+                         "name":  "Browse - pv_hotel_days",
+                         "ide":  380,
+                         "programId":  380,
+                         "publicName":  "pv_hoteldays_dat",
+                         "raw":  "Prg_380"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "Import",
+                         "name":  "Import - req_type_options",
+                         "ide":  378,
+                         "programId":  381,
+                         "publicName":  "",
+                         "raw":  "Prg_381"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "PVE",
+                         "name":  "Print Global Income Tout serv",
+                         "ide":  389,
+                         "programId":  381,
+                         "publicName":  "",
+                         "raw":  "Prg_381"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "REF",
+                         "name":  "Browse - pv_equipment_inventor",
+                         "ide":  381,
+                         "programId":  381,
+                         "publicName":  "pv_inv000000_dat",
+                         "raw":  "Prg_381"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "VIL",
+                         "name":  "Calcul libelle du montant",
+                         "ide":  112,
+                         "programId":  381,
+                         "publicName":  "",
+                         "raw":  "Prg_381"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "Import",
+                         "name":  "Import - resto_reservations+",
+                         "ide":  383,
+                         "programId":  386,
+                         "publicName":  "",
+                         "raw":  "Prg_386"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "PVE",
+                         "name":  "Report - Category selection",
+                         "ide":  394,
+                         "programId":  386,
+                         "publicName":  "",
+                         "raw":  "Prg_386"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "REF",
+                         "name":  "Browse - pv_manufacturers",
+                         "ide":  386,
+                         "programId":  386,
+                         "publicName":  "pv_manufacturer_dat",
+                         "raw":  "Prg_386"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "VIL",
+                         "name":  "Tableau Excel - Cloture Auto",
+                         "ide":  114,
+                         "programId":  386,
+                         "publicName":  "",
+                         "raw":  "Prg_386"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "ADH",
+                         "name":  "Histo ventes payantes /PMS-623",
+                         "ide":  0,
+                         "programId":  389,
+                         "publicName":  "",
+                         "raw":  "Prg_389"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "Import",
+                         "name":  "Import - resto_tables_schedule",
+                         "ide":  386,
+                         "programId":  389,
+                         "publicName":  "",
+                         "raw":  "Prg_389"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "REF",
+                         "name":  "Browse - pv_package_composants",
+                         "ide":  389,
+                         "programId":  389,
+                         "publicName":  "pv_packcomp_dat",
+                         "raw":  "Prg_389"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "ADH",
+                         "name":  "Transaction Nouv vente PMS-721",
+                         "ide":  0,
+                         "programId":  394,
+                         "publicName":  "",
+                         "raw":  "Prg_394"
+                     },
+                     {
+                         "source":  "kb-id",
+                         "verified":  true,
+                         "project":  "Import",
+                         "name":  "Import - scelles",
+                         "ide":  391,
+                         "programId":  394,
+                         "publicName":  "",
+                         "raw":  "Prg_394"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PVE",
+                         "name":  "Report - Margin by Day",
+                         "ide":  41,
+                         "programId":  38,
+                         "publicName":  "",
+                         "raw":  "PVE IDE 41"
+                     }
+                 ],
+    "context":  {
+                    "source":  "index",
+                    "summary":  "POS Edition Income - Ventes GP multi-services absentes de la table tempo",
+                    "createdDate":  "2025-12-01",
+                    "ticketKey":  "PMS-1427",
+                    "rootCause":  "",
+                    "lastAnalysis":  "2026-01-29",
+                    "symptom":  "POS Edition Income - Ventes GP multi-services absentes de la table tempo",
+                    "keywords":  [
+                                     "calcul",
+                                     "date",
+                                     "fichier",
+                                     "import",
+                                     "montant",
+                                     "na"
+                                 ],
+                    "jiraUrl":  "https://clubmed.atlassian.net/browse/PMS-1427",
+                    "status":  "en-cours",
+                    "program":  "PVE IDE 379"
+                },
+    "validation":  {
+                       "HasVerifiedIDE":  true,
+                       "Warnings":  [
+
+                                    ],
+                       "HasDiagram":  true,
+                       "HasContext":  true,
+                       "HasPatterns":  true,
+                       "HasPrograms":  true,
+                       "Errors":  [
+
+                                  ],
+                       "HasExpressions":  false,
+                       "HasFlow":  false,
+                       "Score":  "3/6",
+                       "HasDecodedExpr":  false
+                   }
+}

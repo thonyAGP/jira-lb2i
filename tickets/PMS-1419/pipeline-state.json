@@ -1,0 +1,300 @@
+{
+    "RootCause":  null,
+    "TicketKey":  "PMS-1419",
+    "Phases":  {
+                   "Generate":  {
+                                    "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1419\\analysis.md",
+                                    "Status":  "completed",
+                                    "EndTime":  "2026-01-29T12:34:52.7686098+01:00",
+                                    "StartTime":  "2026-01-29T12:34:52.5467117+01:00"
+                                },
+                   "PatternMatch":  {
+                                        "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1419\\patterns.json",
+                                        "Status":  "completed",
+                                        "EndTime":  "2026-01-29T12:34:52.5467117+01:00",
+                                        "StartTime":  "2026-01-29T12:34:52.3984421+01:00"
+                                    },
+                   "Expressions":  {
+                                       "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1419\\expressions.json",
+                                       "Status":  "completed",
+                                       "EndTime":  "2026-01-29T12:34:52.3881271+01:00",
+                                       "StartTime":  "2026-01-29T12:34:52.3093985+01:00"
+                                   },
+                   "Context":  {
+                                   "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1419\\context.json",
+                                   "Status":  "completed",
+                                   "EndTime":  "2026-01-29T12:34:51.2704496+01:00",
+                                   "StartTime":  "2026-01-29T12:34:50.9135880+01:00"
+                               },
+                   "FlowTrace":  {
+                                     "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1419\\flow.json",
+                                     "Status":  "completed",
+                                     "EndTime":  "2026-01-29T12:34:52.2997564+01:00",
+                                     "StartTime":  "2026-01-29T12:34:52.1825068+01:00"
+                                 },
+                   "Localization":  {
+                                        "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1419\\programs.json",
+                                        "Status":  "completed",
+                                        "EndTime":  "2026-01-29T12:34:52.1663758+01:00",
+                                        "StartTime":  "2026-01-29T12:34:51.2804195+01:00"
+                                    }
+               },
+    "Errors":  [
+
+               ],
+    "EndTime":  "2026-01-29T12:34:52.7686098+01:00",
+    "MatchedPatterns":  {
+                            "Id":  "date-format-inversion",
+                            "Name":  "Inversion format date (MM/DD vs DD/MM)",
+                            "Domain":  "import",
+                            "Score":  2,
+                            "Matches":  [
+                                            {
+                                                "Type":  "keyword",
+                                                "Value":  "arrivee",
+                                                "Weight":  1
+                                            },
+                                            {
+                                                "Type":  "keyword",
+                                                "Value":  "NA",
+                                                "Weight":  1
+                                            }
+                                        ],
+                            "File":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\patterns\\date-format-inversion.md",
+                            "Source":  "",
+                            "HasContent":  true
+                        },
+    "StartTime":  "2026-01-29T12:34:50.8692350+01:00",
+    "Expressions":  [
+
+                    ],
+    "Programs":  [
+                     {
+                         "Callees":  [
+
+                                     ],
+                         "Source":  "kb-exact",
+                         "Verified":  true,
+                         "Callers":  [
+
+                                     ],
+                         "Project":  "PBG",
+                         "Name":  "verif go inexistant dans gmr",
+                         "IDE":  335,
+                         "ProgramId":  671,
+                         "PublicName":  null,
+                         "Raw":  "PBG IDE 335"
+                     },
+                     {
+                         "Verified":  false,
+                         "Raw":  "PBG IDE 410",
+                         "Source":  "not-found"
+                     },
+                     {
+                         "Callees":  [
+
+                                     ],
+                         "Source":  "kb-exact",
+                         "Verified":  true,
+                         "Callers":  [
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  27,
+                                             "name":  "Browse - IMPORT Historique Cha"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  28,
+                                             "name":  "Browse - IMPORT Mod"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  29,
+                                             "name":  "Browse - IMPORT Recup Nâ”¬â–‘Chambr"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  30,
+                                             "name":  "Browse - IMPORT Historique Cha"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  31,
+                                             "name":  "Browse - IMPORT MOD GM"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  32,
+                                             "name":  "Browse - IMPORT Avertiss. MOD"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  33,
+                                             "name":  "Browse - IMPORT Avertiss. AN/V"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  34,
+                                             "name":  "Browse - IMPORT Commentai IMO"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  35,
+                                             "name":  "Browse - IMPORT Troncon   IMT"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  36,
+                                             "name":  "Browse - IMPORT Reprise   IMR"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  37,
+                                             "name":  "Browse - IMPORT Avertiss. IMA"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  38,
+                                             "name":  "Browse - IMPORT PrestationIMP"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  39,
+                                             "name":  "Browse - IMPORT Circuit   IMC"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  40,
+                                             "name":  "Browse - IMPORT Logement  IML"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  41,
+                                             "name":  "Browse - IMPORT Identite  IMI"
+                                         }
+                                     ],
+                         "Project":  "PBG",
+                         "Name":  "Browse - CLIENT           CLI",
+                         "IDE":  56,
+                         "ProgramId":  405,
+                         "PublicName":  null,
+                         "Raw":  "PBG IDE 56"
+                     },
+                     {
+                         "Callees":  [
+
+                                     ],
+                         "Source":  "kb-exact",
+                         "Verified":  true,
+                         "Callers":  [
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  27,
+                                             "name":  "Browse - IMPORT Historique Cha"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  28,
+                                             "name":  "Browse - IMPORT Mod"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  29,
+                                             "name":  "Browse - IMPORT Recup Nâ”¬â–‘Chambr"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  30,
+                                             "name":  "Browse - IMPORT Historique Cha"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  31,
+                                             "name":  "Browse - IMPORT MOD GM"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  32,
+                                             "name":  "Browse - IMPORT Avertiss. MOD"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  33,
+                                             "name":  "Browse - IMPORT Avertiss. AN/V"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  34,
+                                             "name":  "Browse - IMPORT Commentai IMO"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  35,
+                                             "name":  "Browse - IMPORT Troncon   IMT"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  36,
+                                             "name":  "Browse - IMPORT Reprise   IMR"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  37,
+                                             "name":  "Browse - IMPORT Avertiss. IMA"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  38,
+                                             "name":  "Browse - IMPORT PrestationIMP"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  39,
+                                             "name":  "Browse - IMPORT Circuit   IMC"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  40,
+                                             "name":  "Browse - IMPORT Logement  IML"
+                                         },
+                                         {
+                                             "project":  "PBG",
+                                             "ide":  41,
+                                             "name":  "Browse - IMPORT Identite  IMI"
+                                         }
+                                     ],
+                         "Project":  "PBG",
+                         "Name":  "Browse - GM COMPLET       GMC",
+                         "IDE":  59,
+                         "ProgramId":  402,
+                         "PublicName":  null,
+                         "Raw":  "PBG IDE 59"
+                     },
+                     {
+                         "Callees":  [
+
+                                     ],
+                         "Source":  "kb-fuzzy",
+                         "Verified":  true,
+                         "Callers":  [
+                                         {
+                                             "project":  "REF",
+                                             "ide":  1,
+                                             "name":  "Main Program"
+                                         }
+                                     ],
+                         "Project":  "REF",
+                         "Name":  "Contexte Magic",
+                         "IDE":  822,
+                         "ProgramId":  799,
+                         "PublicName":  "ContexteMagic",
+                         "Raw":  "programme Magic"
+                     }
+                 ],
+    "Tables":  [
+                   {
+                       "Raw":  "cafil009_dat",
+                       "Source":  "jira"
+                   }
+               ]
+}

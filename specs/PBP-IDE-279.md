@@ -1,0 +1,384 @@
+﻿# PBP IDE 279 - Regroupement Dossier
+
+> **Analyse**: Phases 1-4 2026-02-03 16:08 -> 16:09 (15s) | Assemblage 16:09
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
+
+<!-- TAB:Resume -->
+
+## 1. FICHE D'IDENTITE
+
+| Attribut | Valeur |
+|----------|--------|
+| Projet | PBP |
+| IDE Position | 279 |
+| Nom Programme | Regroupement Dossier |
+| Fichier source | `Prg_279.xml` |
+| Dossier IDE | RAZ |
+| Taches | 3 (1 ecrans visibles) |
+| Tables modifiees | 3 |
+| Programmes appeles | 0 |
+
+## 2. DESCRIPTION FONCTIONNELLE
+
+**Regroupement Dossier** assure la gestion complete de ce processus, accessible depuis [Groupage Mecano (IDE 275)](PBP-IDE-275.md).
+
+Le flux de traitement s'organise en **2 blocs fonctionnels** :
+
+- **Traitement** (2 taches) : traitements metier divers
+- **Creation** (1 tache) : insertion d'enregistrements en base (mouvements, prestations)
+
+**Donnees modifiees** : 3 tables en ecriture (tempo_livre_de_porte_bresil, tempo_stat_eot, annulation_______arr).
+
+<details>
+<summary>Detail : phases du traitement</summary>
+
+#### Phase 1 : Traitement (2 taches)
+
+- **279** - Veuillez patienter ... **[[ECRAN]](#ecran-t1)**
+- **279.1** - Lecture par dossier **[[ECRAN]](#ecran-t2)**
+
+#### Phase 2 : Creation (1 tache)
+
+- **279.1.1** - Creation Sous-Groupage **[[ECRAN]](#ecran-t3)**
+
+#### Tables impactees
+
+| Table | Operations | Role metier |
+|-------|-----------|-------------|
+| annulation_______arr | **W**/L (2 usages) |  |
+| tempo_stat_eot | **W** (1 usages) | Table temporaire ecran |
+| tempo_livre_de_porte_bresil | **W** (1 usages) | Table temporaire ecran |
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (2 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>279 - Veuillez patienter ... [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : Veuillez patienter ....
+**Ecran** : 425 x 58 DLU (MDI) | [Voir mockup](#ecran-t1)
+
+---
+
+#### <a id="t2"></a>279.1 - Lecture par dossier [[ECRAN]](#ecran-t2)
+
+**Role** : Traitement : Lecture par dossier.
+**Ecran** : 248 x 206 DLU (MDI) | [Voir mockup](#ecran-t2)
+
+
+### 3.2 Creation (1 tache)
+
+Insertion de nouveaux enregistrements en base.
+
+---
+
+#### <a id="t3"></a>279.1.1 - Creation Sous-Groupage [[ECRAN]](#ecran-t3)
+
+**Role** : Creation d'enregistrement : Creation Sous-Groupage.
+**Ecran** : 248 x 206 DLU (MDI) | [Voir mockup](#ecran-t3)
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Groupage Mecano (IDE 275)](PBP-IDE-275.md)
+- **Appelle**: 0 programmes | **Tables**: 3 (W:3 R:0 L:1) | **Taches**: 3 | **Expressions**: 3
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (1 / 3)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 279 | 279 | Veuillez patienter ... | MDI | 425 | 58 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>279 - Veuillez patienter ...
+**Tache** : [279](#t1) | **Type** : MDI | **Dimensions** : 425 x 58 DLU
+**Bloc** : Traitement | **Titre IDE** : Veuillez patienter ...
+
+<!-- FORM-DATA:
+{
+    "width":  425,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
+    "controls":  [
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  0,
+                         "w":  423,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  29,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  120,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  10,
+                         "w":  221,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "Traitement en cours ...",
+                         "parent":  null
+                     },
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  29,
+                         "w":  423,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  27,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  69,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  38,
+                         "w":  286,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "Groupement dossiers",
+                         "parent":  null
+                     },
+                     {
+                         "x":  4,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  2,
+                         "w":  72,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  25,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "279",
+    "height":  58
+}
+-->
+
+## 9. NAVIGATION
+
+Ecran unique: **Veuillez patienter ...**
+
+### 9.3 Structure hierarchique (3 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **279.1** | [**Veuillez patienter ...** (279)](#t1) [mockup](#ecran-t1) | MDI | 425x58 | Traitement |
+| 279.1.1 | [Lecture par dossier (279.1)](#t2) [mockup](#ecran-t2) | MDI | 248x206 | |
+| **279.2** | [**Creation Sous-Groupage** (279.1.1)](#t3) [mockup](#ecran-t3) | MDI | 248x206 | Creation |
+
+### 9.4 Algorigramme
+
+```mermaid
+flowchart TD
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 3 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+```
+
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+
+<!-- TAB:Donnees -->
+
+## 10. TABLES
+
+### Tables utilisees (3)
+
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 624 | tempo_livre_de_porte_bresil | Table temporaire ecran | TMP |   | **W** |   | 1 |
+| 626 | tempo_stat_eot | Table temporaire ecran | TMP |   | **W** |   | 1 |
+| 627 | annulation_______arr |  | DB |   | **W** | L | 2 |
+
+### Colonnes par table (0 / 3 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 624 - tempo_livre_de_porte_bresil (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 626 - tempo_stat_eot (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 627 - annulation_______arr (**W**/L) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+*(Programme sans variables locales mappees)*
+
+## 12. EXPRESSIONS
+
+**3 / 3 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONSTANTE | 1 | 0 |
+| REFERENCE_VG | 1 | 0 |
+| OTHER | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONSTANTE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 3 | `1` | - |
+
+#### REFERENCE_VG (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 1 | `VG1` | - |
+
+#### OTHER (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 2 | `[B]` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Groupage Mecano (IDE 275)](PBP-IDE-275.md) -> **Regroupement Dossier (IDE 279)**
+
+```mermaid
+graph LR
+    T279[279 Regroupement Dossier]
+    style T279 fill:#58a6ff
+    CC108[108 Edition Forfait Ski]
+    style CC108 fill:#8b5cf6
+    CC127[127 Liste Mecanographique]
+    style CC127 fill:#f59e0b
+    CC114[114 Liste Mec benef fo...]
+    style CC114 fill:#f59e0b
+    CC269[269 Preparation Mecano]
+    style CC269 fill:#f59e0b
+    CC275[275 Groupage Mecano]
+    style CC275 fill:#3fb950
+    CC269 --> CC275
+    CC114 --> CC269
+    CC127 --> CC269
+    CC108 --> CC114
+    CC108 --> CC127
+    CC275 --> T279
+```
+
+### 13.2 Callers
+
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [275](PBP-IDE-275.md) | Groupage Mecano | 1 |
+
+### 13.3 Callees (programmes appeles)
+
+```mermaid
+graph LR
+    T279[279 Regroupement Dossier]
+    style T279 fill:#58a6ff
+    NONE[Aucun callee]
+    T279 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
+```
+
+### 13.4 Detail Callees avec contexte
+
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
+
+## 14. RECOMMANDATIONS MIGRATION
+
+### 14.1 Profil du programme
+
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 30 | Programme compact |
+| Expressions | 3 | Peu de logique |
+| Tables WRITE | 3 | Impact modere |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 30) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
+
+### 14.2 Plan de migration par bloc
+
+#### Traitement (2 taches: 2 ecrans, 0 traitement)
+
+- **Strategie** : 2 composant(s) UI (Razor/React) avec formulaires et validation.
+- Decomposer les taches en services unitaires testables.
+
+#### Creation (1 tache: 1 ecran, 0 traitement)
+
+- **Strategie** : Repository pattern avec Entity Framework Core.
+- Insertion via `IRepository<T>.CreateAsync()`
+
+### 14.3 Dependances critiques
+
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| tempo_livre_de_porte_bresil | Table WRITE (Temp) | 1x | Schema + repository |
+| tempo_stat_eot | Table WRITE (Temp) | 1x | Schema + repository |
+| annulation_______arr | Table WRITE (Database) | 1x | Schema + repository |
+
+---
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-03 16:09*

@@ -1,0 +1,320 @@
+{
+  "lastSync": "2026-04-04T18:54:52Z",
+  "lastUpdated": "2026-02-25T10:30:00.0000000+01:00",
+  "localTickets": [
+    {
+      "hasLocalData": true,
+      "status": "fermé",
+      "key": "CMDS-183643",
+      "summary": "Equipement perdu dans POS - Suppression/recreation prestations PBG",
+      "lastAnalysis": "2026-02-25",
+      "program": "PBG IDE 206",
+      "jiraStatus": "Fermé",
+      "resolution": "19-Bug/anomalie/développement logiciel",
+      "resolvedDate": "2026-02-24"
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1337",
+      "summary": "Double lancement Caisse Adherent - Controle session/utilisateur",
+      "lastAnalysis": "2026-01-21",
+      "program": "ADH IDE 156",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-22"
+    },
+    {
+      "hasLocalData": true,
+      "status": "fermé",
+      "key": "CMDS-174321",
+      "summary": "Bug date arrivee PB027 (+1 mois) - Donnees corrompues en base",
+      "jiraStatus": "Fermé",
+      "resolution": "19-Bug/anomalie/développement logiciel",
+      "resolvedDate": "2026-02-11"
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1373",
+      "summary": "Masquer annulations dans extrait compte - Branche feature/PMS-1373",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-13"
+    },
+    {
+      "hasLocalData": true,
+      "status": "fermé",
+      "key": "CMDS-176521",
+      "summary": "Prix remise affiche incorrect POS - Fix Davide fin janvier",
+      "jiraStatus": "Fermé",
+      "resolution": "19-Bug/anomalie/développement logiciel",
+      "resolvedDate": "2026-01-08"
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1446",
+      "summary": "Location materiel ski courts sejours - Calcul MODEDAYINC",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-19"
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1437",
+      "summary": "Early return SKI - 5 pistes classees (MODEDAYINC prioritaire)",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-12"
+    },
+    {
+      "hasLocalData": true,
+      "status": "fermé",
+      "key": "CMDS-176481",
+      "summary": "Double attribution Gift Pass - Bug AFFAUTO identifie (API externe)",
+      "jiraStatus": "Fermé",
+      "resolution": "19-Bug/anomalie/développement logiciel",
+      "resolvedDate": "2026-01-12"
+    },
+    {
+      "hasLocalData": true,
+      "status": "fermé",
+      "key": "CMDS-176818",
+      "summary": "Tickets Epson police grande - Config imprimante Valmorel",
+      "jiraStatus": "Fermé",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-13"
+    },
+    {
+      "hasLocalData": true,
+      "status": "livré-recette",
+      "key": "PMS-1359",
+      "summary": "Edition Cloture - Indicateur ecart FDR - Commit 9422490b5",
+      "jiraStatus": "Livré Recette",
+      "resolution": null,
+      "resolvedDate": null
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1404",
+      "summary": "POS Reports M&E - Quantity OK, filtres JAMAIS implementes",
+      "lastAnalysis": "2026-01-18",
+      "createdDate": "2026-01-12",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-19"
+    },
+    {
+      "hasLocalData": true,
+      "status": "blocage-ou-attente-infos",
+      "key": "PMS-1402",
+      "summary": "Automatisation Taxe de sejour - Batch nuit + OD automatique",
+      "jiraStatus": "Blocage ou attente infos",
+      "resolution": null,
+      "resolvedDate": null
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1407",
+      "summary": "Validation auto Back Office - NON REGRESSION (Magic.ini local)",
+      "lastAnalysis": "2026-01-19",
+      "program": "PBG IDE 121",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-19"
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1414",
+      "summary": "Validation groupee seminaire - Vol retour non requis",
+      "lastAnalysis": "2026-01-19",
+      "program": "PBG IDE 124",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-20"
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1332",
+      "summary": "Fiche police date fin 00/00/0000 - Sans limite pour GO",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-20"
+    },
+    {
+      "hasLocalData": true,
+      "status": "livré-recette",
+      "key": "PMS-1412",
+      "summary": "POS SKI Japon - Impression facture obligatoire meme si mail",
+      "lastAnalysis": "2026-01-21",
+      "program": "PVE IDE 199",
+      "jiraStatus": "Livré Recette",
+      "resolution": null,
+      "resolvedDate": null
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1400",
+      "summary": "POS Reports - Evolution REVENUE CANCELATIONS (Gift Pass, Payment Type, Totaux)",
+      "lastAnalysis": "2026-01-21",
+      "program": "PVE IDE 75",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-26"
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1451",
+      "summary": "PURGE prend uniquement le 1er troncon de sejour - Fix REF IDE 749.1",
+      "lastAnalysis": "2026-01-22",
+      "program": "REF IDE 749.1",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-28"
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1453",
+      "summary": "Caisse Adherent - Vente transfert > heure erronee (validation 00:00-23:59)",
+      "lastAnalysis": "2026-01-26",
+      "program": "ADH IDE 307",
+      "rootCause": "Missing Picture validation on FIELD_TIME columns",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-28"
+    },
+    {
+      "hasLocalData": true,
+      "status": "abandonné",
+      "key": "PMS-1381",
+      "summary": "Messages verrouillages PURGE - Comportement normal gestion concurrence",
+      "lastAnalysis": "2026-01-22",
+      "program": "PUG IDE 18",
+      "jiraStatus": "Abandonné",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-01-28"
+    },
+    {
+      "hasLocalData": true,
+      "status": "livré-recette",
+      "key": "PMS-1457",
+      "summary": "Caution forfait ski automatique St Moritz - 25 CHF cloture nuit",
+      "lastAnalysis": "2026-01-22",
+      "program": "REF IDE 621",
+      "jiraStatus": "Livré Recette",
+      "resolution": null,
+      "resolvedDate": null
+    },
+    {
+      "hasLocalData": true,
+      "status": "ouvert",
+      "key": "PMS-1427",
+      "summary": "POS Edition Income - Ventes GP multi-services absentes de la table tempo",
+      "lastAnalysis": "2026-01-29",
+      "program": "PVE IDE 379",
+      "createdDate": "2025-12-01",
+      "jiraStatus": "Ouvert",
+      "resolution": null,
+      "resolvedDate": null
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ok",
+      "key": "PMS-1419",
+      "summary": "Validation qualites GO - Comptage JH selon heure pays (14h seuil)",
+      "lastAnalysis": "2026-01-29",
+      "program": "PBG IDE 56",
+      "createdDate": "2025-11-24",
+      "jiraStatus": "Recette OK",
+      "resolution": "Terminé",
+      "resolvedDate": "2026-02-06"
+    },
+    {
+      "hasLocalData": true,
+      "status": "livré-recette",
+      "key": "PMS-1479",
+      "summary": "Taxe sejour libelle Caisse au lieu de TAXE DE SEJOUR - Bug ecriture OD",
+      "lastAnalysis": "2026-02-17",
+      "program": "ADH IDE 247 (DEVERSEMENT) + Vente GP",
+      "rootCause": "Vente ecrit service label au lieu de description OD dans col 6 source, DEVERSEMENT copie fidelement",
+      "createdDate": "2026-02-04",
+      "jiraStatus": "Livré Recette",
+      "resolution": null,
+      "resolvedDate": null
+    },
+    {
+      "hasLocalData": true,
+      "status": "analyse-complete",
+      "key": "PMS-1521",
+      "summary": "POS SKI: evolution pour LOCATION CASQUE - EPI Settings",
+      "lastAnalysis": "2026-03-18",
+      "program": "PVE Prg_178 - Menu Equipment inventory",
+      "createdDate": "2026-03-17"
+    },
+    {
+      "hasLocalData": true,
+      "status": "en-cours-de-traitement",
+      "key": "CMDS-188610",
+      "summary": "Edition VENTE TPE - Total VISA double (Da Balaia) - Double lecture caisse_vente + tickets_tpe",
+      "lastAnalysis": "2026-03-28",
+      "program": "VIL Prg_583 (Genere tempo vente telecollec)",
+      "rootCause": "Prg_583 copie transactions VISA depuis caisse_vente ET tickets_tpe dans meme table temporaire - doublement total",
+      "createdDate": "2026-03-25",
+      "jiraStatus": "En cours de traitement",
+      "resolution": null,
+      "resolvedDate": null
+    },
+    {
+      "hasLocalData": true,
+      "status": "en-attente",
+      "key": "CMDS-188759",
+      "summary": "Reservations annulees NA restent dans PMS - Chaine Import/PBG annulation",
+      "lastAnalysis": "2026-03-30",
+      "program": "PBG IDE 206/238 (Import IDE 159/160)",
+      "createdDate": "2026-03-28",
+      "jiraStatus": "En attente",
+      "resolution": null,
+      "resolvedDate": null
+    },
+    {
+      "hasLocalData": true,
+      "status": "en-cours",
+      "key": "PMS-1456",
+      "summary": "Planning Print - Fiches police Italie (PRAC/CFAC) - Export Excel",
+      "lastAnalysis": "2026-03-31",
+      "program": "GES CG0076 + PBG Planning Print",
+      "createdDate": "2026-02-01"
+    },
+    {
+      "hasLocalData": true,
+      "status": "en-cours",
+      "key": "PMS-1459",
+      "summary": "POS SKI - Annulation upgrade rembourse tout le forfait location",
+      "lastAnalysis": "2026-02-03",
+      "program": "PVE IDE 312 (Recalcul annulations)",
+      "rootCause": "CANCEL ignore lignes EXCHANGE - reversal unique sur RENTAL au lieu des 3 lignes exchange",
+      "createdDate": "2026-02-01"
+    },
+    {
+      "hasLocalData": true,
+      "status": "recette-ko",
+      "key": "PMS-1496",
+      "summary": "POS SKI - Changement libelle service SKIN vers Ski sur documents",
+      "lastAnalysis": "2026-03-31",
+      "program": "PVE Prg_351/406/423/433 (Print Invoice)",
+      "rootCause": "Programmes impression utilisent {0,13} (CODE service) au lieu de GetParam SERVICELIB (libelle)",
+      "createdDate": "2026-03-01"
+    }
+  ],
+  "tickets": [],
+  "lastJiraSync": "2026-04-04T18:54:52Z"
+}

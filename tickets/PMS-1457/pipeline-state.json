@@ -1,0 +1,66 @@
+{
+    "RootCause":  null,
+    "TicketKey":  "PMS-1457",
+    "Phases":  {
+                   "Generate":  {
+                                    "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1457\\analysis.md",
+                                    "Status":  "completed",
+                                    "EndTime":  "2026-01-24T15:18:40.1852005+01:00",
+                                    "StartTime":  "2026-01-24T15:18:40.0759320+01:00"
+                                },
+                   "PatternMatch":  {
+                                        "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1457\\patterns.json",
+                                        "Status":  "completed",
+                                        "EndTime":  "2026-01-24T15:18:40.0725302+01:00",
+                                        "StartTime":  "2026-01-24T15:18:39.8719033+01:00"
+                                    },
+                   "Expressions":  {
+                                       "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1457\\expressions.json",
+                                       "Status":  "completed",
+                                       "EndTime":  "2026-01-24T15:18:39.8632977+01:00",
+                                       "StartTime":  "2026-01-24T15:18:39.7525655+01:00"
+                                   },
+                   "Context":  {
+                                   "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1457\\context.json",
+                                   "Status":  "completed",
+                                   "EndTime":  "2026-01-24T15:18:39.3587538+01:00",
+                                   "StartTime":  "2026-01-24T15:18:39.2169294+01:00"
+                               },
+                   "FlowTrace":  {
+                                     "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1457\\flow.json",
+                                     "Status":  "completed",
+                                     "EndTime":  "2026-01-24T15:18:39.7367827+01:00",
+                                     "StartTime":  "2026-01-24T15:18:39.5790251+01:00"
+                                 },
+                   "Localization":  {
+                                        "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1457\\programs.json",
+                                        "Status":  "completed",
+                                        "EndTime":  "2026-01-24T15:18:39.5790251+01:00",
+                                        "StartTime":  "2026-01-24T15:18:39.3587538+01:00"
+                                    }
+               },
+    "Errors":  [
+
+               ],
+    "EndTime":  "2026-01-24T15:18:40.1852005+01:00",
+    "MatchedPatterns":  null,
+    "StartTime":  "2026-01-24T15:18:39.1855938+01:00",
+    "Expressions":  [
+
+                    ],
+    "Programs":  [
+                     {
+                         "Source":  "kb-exact",
+                         "Verified":  true,
+                         "Project":  "REF",
+                         "Name":  "Cloture OB",
+                         "IDE":  621,
+                         "ProgramId":  620,
+                         "PublicName":  "ClotureOB",
+                         "Raw":  "REF IDE 621"
+                     }
+                 ],
+    "Tables":  [
+
+               ]
+}

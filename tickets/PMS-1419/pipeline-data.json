@@ -1,0 +1,139 @@
+{
+    "flow":  {
+                 "stats":  {
+                               "programsTraced":  0,
+                               "callTasks":  0,
+                               "expressions":  0
+                           },
+                 "diagram":  "```\nFLUX PROGRAMMES MAGIC\n=====================\n\n```"
+             },
+    "pipeline":  {
+                     "score":  "3/6",
+                     "phases":  {
+                                    "diagnostic":  {
+                                                       "completed":  false
+                                                   },
+                                    "patterns":  {
+                                                     "completed":  true
+                                                 },
+                                    "expressions":  {
+                                                        "completed":  false
+                                                    },
+                                    "context":  {
+                                                    "completed":  true
+                                                },
+                                    "flowTrace":  {
+                                                      "completed":  false
+                                                  },
+                                    "localization":  {
+                                                         "completed":  true
+                                                     }
+                                }
+                 },
+    "ticketKey":  "PMS-1419",
+    "version":  "2.0",
+    "generatedAt":  "2026-01-29T12:35:27.4095257+01:00",
+    "patterns":  {
+                     "matchedCount":  1,
+                     "minimumScore":  2
+                 },
+    "template":  "TEMPLATE-ANALYSIS.md",
+    "expressions":  {
+                        "stats":  {
+                                      "Failed":  0,
+                                      "Decoded":  0,
+                                      "Total":  0
+                                  },
+                        "decodedCount":  0,
+                        "count":  0
+                    },
+    "programs":  [
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBG",
+                         "name":  "verif go inexistant dans gmr",
+                         "ide":  335,
+                         "programId":  671,
+                         "publicName":  "",
+                         "raw":  "PBG IDE 335"
+                     },
+                     {
+                         "source":  "not-found",
+                         "verified":  false,
+                         "project":  "",
+                         "name":  "",
+                         "ide":  0,
+                         "programId":  0,
+                         "publicName":  "",
+                         "raw":  "PBG IDE 410"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBG",
+                         "name":  "Browse - CLIENT           CLI",
+                         "ide":  56,
+                         "programId":  405,
+                         "publicName":  "",
+                         "raw":  "PBG IDE 56"
+                     },
+                     {
+                         "source":  "kb-exact",
+                         "verified":  true,
+                         "project":  "PBG",
+                         "name":  "Browse - GM COMPLET       GMC",
+                         "ide":  59,
+                         "programId":  402,
+                         "publicName":  "",
+                         "raw":  "PBG IDE 59"
+                     },
+                     {
+                         "source":  "kb-fuzzy",
+                         "verified":  true,
+                         "project":  "REF",
+                         "name":  "Contexte Magic",
+                         "ide":  822,
+                         "programId":  799,
+                         "publicName":  "ContexteMagic",
+                         "raw":  "programme Magic"
+                     }
+                 ],
+    "context":  {
+                    "source":  "index",
+                    "summary":  "Validation qualites GO - Comptage JH selon heure pays (14h seuil)",
+                    "createdDate":  "2025-11-24",
+                    "ticketKey":  "PMS-1419",
+                    "rootCause":  "",
+                    "lastAnalysis":  "2026-01-29",
+                    "symptom":  "Validation qualites GO - Comptage JH selon heure pays (14h seuil)",
+                    "keywords":  [
+                                     "@{Category=date; Keyword=arrivee}",
+                                     "@{Category=calcul; Keyword=calcul}",
+                                     "@{Category=affichage; Keyword=ecran}",
+                                     "@{Category=date; Keyword=heure}",
+                                     "@{Category=import; Keyword=na}",
+                                     "@{Category=date; Keyword=time}"
+                                 ],
+                    "jiraUrl":  "https://clubmed.atlassian.net/browse/PMS-1419",
+                    "status":  "en-cours",
+                    "program":  "PBG IDE 56"
+                },
+    "validation":  {
+                       "HasVerifiedIDE":  true,
+                       "Warnings":  [
+
+                                    ],
+                       "HasDiagram":  true,
+                       "HasContext":  true,
+                       "HasPatterns":  true,
+                       "HasPrograms":  true,
+                       "Errors":  [
+
+                                  ],
+                       "HasExpressions":  false,
+                       "HasFlow":  false,
+                       "Score":  "3/6",
+                       "HasDecodedExpr":  false
+                   }
+}

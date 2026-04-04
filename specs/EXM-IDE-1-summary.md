@@ -1,0 +1,31 @@
+﻿# EXM IDE 1 - Main Program
+
+> **Analyse**: 2026-02-03 11:09
+> **Pipeline**: V7.2 Enrichi
+
+## RESUME EXECUTIF
+
+- **Fonction**: Main Program
+- **Tables modifiees**: 0
+- **Complexite**: **BASSE** (5/100)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+
+## PROGRAMMES LIES
+
+| Direction | Programmes |
+|-----------|------------|
+| **Appele par** | (aucun) |
+| **Appelle** | [Changement application (IDE 13)](EXM-IDE-13.md), [Annule et quitter (IDE 16)](EXM-IDE-16.md), [Menu general (IDE 18)](EXM-IDE-18.md), [Start (IDE 19)](EXM-IDE-19.md) |
+
+## STATISTIQUES
+
+| Metrique | Valeur |
+|----------|--------|
+| Taches | 1 |
+| Lignes Logic | 22 |
+| Expressions | 11 |
+| Tables | 0 |
+
+---
+*Spec SUMMARY generee par Pipeline V7.2*

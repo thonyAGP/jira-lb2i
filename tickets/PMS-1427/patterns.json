@@ -1,0 +1,64 @@
+{
+    "MatchedAt":  "2026-01-29T12:34:26.3581039+01:00",
+    "Input":  {
+                  "Symptom":  "POS Edition Income - Ventes GP multi-services absentes de la table tempo",
+                  "Keywords":  [
+                                   "@{Category=calcul; Keyword=calcul}",
+                                   "@{Category=date; Keyword=date}",
+                                   "@{Category=import; Keyword=fichier}",
+                                   "@{Category=import; Keyword=import}",
+                                   "@{Category=calcul; Keyword=montant}",
+                                   "@{Category=import; Keyword=na}"
+                               ]
+              },
+    "Patterns":  [
+                     {
+                         "Id":  "table-link-missing",
+                         "Name":  "Liaison table manquante",
+                         "Domain":  "data",
+                         "Score":  3,
+                         "Matches":  [
+                                         {
+                                             "Type":  "keyword",
+                                             "Value":  "table",
+                                             "Weight":  1
+                                         },
+                                         {
+                                             "Type":  "domain",
+                                             "Value":  "table",
+                                             "Weight":  2
+                                         }
+                                     ],
+                         "File":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\patterns\\table-link-missing.md",
+                         "Source":  "",
+                         "HasContent":  true
+                     },
+                     {
+                         "Id":  "date-format-inversion",
+                         "Name":  "Inversion format date (MM/DD vs DD/MM)",
+                         "Domain":  "import",
+                         "Score":  3,
+                         "Matches":  [
+                                         {
+                                             "Type":  "keyword",
+                                             "Value":  "date",
+                                             "Weight":  1
+                                         },
+                                         {
+                                             "Type":  "keyword",
+                                             "Value":  "import",
+                                             "Weight":  1
+                                         },
+                                         {
+                                             "Type":  "keyword",
+                                             "Value":  "NA",
+                                             "Weight":  1
+                                         }
+                                     ],
+                         "File":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\patterns\\date-format-inversion.md",
+                         "Source":  "",
+                         "HasContent":  true
+                     }
+                 ],
+    "MinimumScore":  2
+}

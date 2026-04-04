@@ -1,0 +1,36 @@
+{
+    "MatchedAt":  "2026-01-29T12:34:52.4197801+01:00",
+    "Input":  {
+                  "Symptom":  "Validation qualites GO - Comptage JH selon heure pays (14h seuil)",
+                  "Keywords":  [
+                                   "@{Category=date; Keyword=arrivee}",
+                                   "@{Category=calcul; Keyword=calcul}",
+                                   "@{Category=affichage; Keyword=ecran}",
+                                   "@{Category=date; Keyword=heure}",
+                                   "@{Category=import; Keyword=na}",
+                                   "@{Category=date; Keyword=time}"
+                               ]
+              },
+    "Patterns":  {
+                     "Id":  "date-format-inversion",
+                     "Name":  "Inversion format date (MM/DD vs DD/MM)",
+                     "Domain":  "import",
+                     "Score":  2,
+                     "Matches":  [
+                                     {
+                                         "Type":  "keyword",
+                                         "Value":  "arrivee",
+                                         "Weight":  1
+                                     },
+                                     {
+                                         "Type":  "keyword",
+                                         "Value":  "NA",
+                                         "Weight":  1
+                                     }
+                                 ],
+                     "File":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\patterns\\date-format-inversion.md",
+                     "Source":  "",
+                     "HasContent":  true
+                 },
+    "MinimumScore":  2
+}

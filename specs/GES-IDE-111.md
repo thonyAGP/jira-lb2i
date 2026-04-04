@@ -1,0 +1,449 @@
+﻿# GES IDE 111 - Zoom table imputation
+
+> **Analyse**: Phases 1-4 2026-02-03 11:54 -> 11:54 (13s) | Assemblage 11:54
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
+
+<!-- TAB:Resume -->
+
+## 1. FICHE D'IDENTITE
+
+| Attribut | Valeur |
+|----------|--------|
+| Projet | GES |
+| IDE Position | 111 |
+| Nom Programme | Zoom table imputation |
+| Fichier source | `Prg_111.xml` |
+| Dossier IDE | Zooms |
+| Taches | 1 (1 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
+
+## 2. DESCRIPTION FONCTIONNELLE
+
+**Zoom table imputation** assure la gestion complete de ce processus, accessible depuis [  CM  Table Gratuits (IDE 86)](GES-IDE-86.md), [CIA Pack control (IDE 109)](GES-IDE-109.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Consultation** (1 tache) : ecrans de recherche, selection et consultation
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Consultation (1 tache)
+
+Ecrans de recherche et consultation.
+
+---
+
+#### <a id="t1"></a>111 - Zoom table imputation [[ECRAN]](#ecran-t1)
+
+**Role** : Selection par l'operateur : Zoom table imputation.
+**Ecran** : 504 x 151 DLU (MDI) | [Voir mockup](#ecran-t1)
+**Variables liees** : B (> imputation), C (> sous imputation)
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [  CM  Table Gratuits (IDE 86)](GES-IDE-86.md), [CIA Pack control (IDE 109)](GES-IDE-109.md)
+- **Appelle**: 1 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 10
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (1 / 1)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 111 | 111 | Zoom table imputation | MDI | 504 | 151 | Consultation |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>111 - Zoom table imputation
+**Tache** : [111](#t1) | **Type** : MDI | **Dimensions** : 504 x 151 DLU
+**Bloc** : Consultation | **Titre IDE** : Zoom table imputation
+
+<!-- FORM-DATA:
+{
+    "width":  504,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
+    "controls":  [
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  132,
+                         "w":  504,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  19,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  28,
+                         "type":  "table",
+                         "var":  "",
+                         "name":  "",
+                         "titleH":  12,
+                         "color":  "196",
+                         "w":  448,
+                         "y":  8,
+                         "fmt":  "",
+                         "parent":  null,
+                         "text":  "",
+                         "rowH":  14,
+                         "h":  100,
+                         "cols":  [
+                                      {
+                                          "title":  "Service",
+                                          "layer":  1,
+                                          "w":  94
+                                      },
+                                      {
+                                          "title":  "Imputation",
+                                          "layer":  2,
+                                          "w":  132
+                                      },
+                                      {
+                                          "title":  "Libellé",
+                                          "layer":  3,
+                                          "w":  188
+                                      }
+                                  ],
+                         "rows":  3
+                     },
+                     {
+                         "x":  35,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  53,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "196",
+                         "text":  "",
+                         "parent":  25
+                     },
+                     {
+                         "x":  261,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  176,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "196",
+                         "text":  "",
+                         "parent":  25
+                     },
+                     {
+                         "x":  307,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  135,
+                         "w":  144,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  14,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  53,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  135,
+                         "w":  144,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  14,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  223,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  112,
+                         "w":  58,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  130,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  120,
+                         "fmt":  "10",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "196",
+                         "text":  "",
+                         "parent":  25
+                     }
+                 ],
+    "taskId":  "111",
+    "height":  151
+}
+-->
+
+<details>
+<summary><strong>Champs : 3 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 35,23 | (sans nom) | - | edit |
+| 261,23 | (sans nom) | - | edit |
+| 130,23 | 10 | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 2 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| (sans nom) | 307,135 | Action declenchee |
+| (sans nom) | 53,135 | Action declenchee |
+
+</details>
+
+## 9. NAVIGATION
+
+Ecran unique: **Zoom table imputation**
+
+### 9.3 Structure hierarchique (1 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **111.1** | [**Zoom table imputation** (111)](#t1) [mockup](#ecran-t1) | MDI | 504x151 | Consultation |
+
+### 9.4 Algorigramme
+
+```mermaid
+flowchart TD
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+```
+
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+
+<!-- TAB:Donnees -->
+
+## 10. TABLES
+
+### Tables utilisees (1)
+
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 65 | comptes_recette__cre | Comptes GM (generaux) | DB | R |   |   | 1 |
+
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 65 - comptes_recette__cre (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | > service | R | Alpha |
+| B | > imputation | R | Numeric |
+| C | > sous imputation | R | Numeric |
+| D | > libelle | R | Alpha |
+| E | bouton quitter | R | Alpha |
+| F | bouton selectionner | R | Alpha |
+| G | v. titre | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| G | v. titre | Alpha | 2x session |
+
+### 11.2 Autres (6)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | > service | Alpha | 1x refs |
+| B | > imputation | Numeric | - |
+| C | > sous imputation | Numeric | - |
+| D | > libelle | Alpha | - |
+| E | bouton quitter | Alpha | 1x refs |
+| F | bouton selectionner | Alpha | 2x refs |
+
+## 12. EXPRESSIONS
+
+**10 / 10 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONCATENATION | 1 | 0 |
+| CONSTANTE | 3 | 0 |
+| OTHER | 4 | 0 |
+| CONDITION | 1 | 0 |
+| STRING | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONCATENATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 2 | `Trim (Str (bouton selectionner [F],'##########Z '))&' - '&Trim (Str (v. titre [G],'###'))` | - |
+
+#### CONSTANTE (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 6 | `'&Selectionner'` | - |
+| CONSTANTE | 5 | `'&Quitter'` | - |
+| CONSTANTE | 4 | `25` | - |
+
+#### OTHER (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 9 | `v. titre [G]` | - |
+| OTHER | 10 | `[H]` | - |
+| OTHER | 7 | `bouton quitter [E]` | - |
+| OTHER | 8 | `bouton selectionner [F]` | - |
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 1 | `CndRange(Trim(> service [A])<>'',> service [A])` | - |
+
+#### STRING (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 3 | `Trim ([K])` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [  CM  Table Gratuits (IDE 86)](GES-IDE-86.md) -> **Zoom table imputation (IDE 111)**
+
+Main -> ... -> [CIA Pack control (IDE 109)](GES-IDE-109.md) -> **Zoom table imputation (IDE 111)**
+
+```mermaid
+graph LR
+    T111[111 Zoom table imputation]
+    style T111 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC69[69 Menu gestion]
+    style CC69 fill:#f59e0b
+    CC107[107 Menu Telephone]
+    style CC107 fill:#f59e0b
+    CC81[81 CM Menu Autres tables]
+    style CC81 fill:#f59e0b
+    CC86[86 CM Table Gratuits]
+    style CC86 fill:#3fb950
+    CC109[109 CIA Pack control]
+    style CC109 fill:#3fb950
+    CC81 --> CC86
+    CC107 --> CC86
+    CC81 --> CC109
+    CC107 --> CC109
+    CC69 --> CC81
+    CC69 --> CC107
+    CC1 --> CC69
+    CC86 --> T111
+    CC109 --> T111
+```
+
+### 13.2 Callers
+
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [86](GES-IDE-86.md) |   CM  Table Gratuits | 2 |
+| [109](GES-IDE-109.md) | CIA Pack control | 1 |
+
+### 13.3 Callees (programmes appeles)
+
+```mermaid
+graph LR
+    T111[111 Zoom table imputation]
+    style T111 fill:#58a6ff
+    C30[30 Recuperation du titre]
+    T111 --> C30
+    style C30 fill:#3fb950
+```
+
+### 13.4 Detail Callees avec contexte
+
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [30](GES-IDE-30.md) | Recuperation du titre | 1 | Recuperation donnees |
+
+## 14. RECOMMANDATIONS MIGRATION
+
+### 14.1 Profil du programme
+
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 20 | Programme compact |
+| Expressions | 10 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 20) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
+
+### 14.2 Plan de migration par bloc
+
+#### Consultation (1 tache: 1 ecran, 0 traitement)
+
+- **Strategie** : Composants de recherche/selection en modales.
+- 1 ecran : Zoom table imputation
+
+### 14.3 Dependances critiques
+
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Recuperation du titre (IDE 30)](GES-IDE-30.md) | Sous-programme | 1x | Normale - Recuperation donnees |
+
+---
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-03 11:54*

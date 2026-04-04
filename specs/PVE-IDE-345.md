@@ -1,0 +1,413 @@
+﻿# PVE IDE 345 - Choix - Category shoe size
+
+> **Analyse**: Phases 1-4 2026-02-03 19:41 -> 19:41 (11s) | Assemblage 19:41
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
+
+<!-- TAB:Resume -->
+
+## 1. FICHE D'IDENTITE
+
+| Attribut | Valeur |
+|----------|--------|
+| Projet | PVE |
+| IDE Position | 345 |
+| Nom Programme | Choix - Category shoe size |
+| Fichier source | `Prg_345.xml` |
+| Dossier IDE | Developpement |
+| Taches | 1 (1 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
+
+## 2. DESCRIPTION FONCTIONNELLE
+
+**Choix - Category shoe size** assure la gestion complete de ce processus, accessible depuis [Skier Profile (IDE 212)](PVE-IDE-212.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Traitement** (1 tache) : traitements metier divers
+
+**Logique metier** : 1 regles identifiees couvrant conditions metier.
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>345 - Shoe Size [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : Shoe Size.
+**Ecran** : 362 x 377 DLU (MDI) | [Voir mockup](#ecran-t1)
+**Variables liees** : A (P.i.o.Cat shoe size)
+
+
+## 5. REGLES METIER
+
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Si VG142 alors [E] sinon [D])
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `VG142` |
+| **Si vrai** | [E] |
+| **Si faux** | [D]) |
+| **Expression source** | Expression 4 : `IF(VG142,[E],[D])` |
+| **Exemple** | Si VG142 â†’ [E]. Sinon â†’ [D]) |
+
+## 6. CONTEXTE
+
+- **Appele par**: [Skier Profile (IDE 212)](PVE-IDE-212.md)
+- **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 4
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (1 / 1)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 345 | 345 | Shoe Size | MDI | 362 | 377 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>345 - Shoe Size
+**Tache** : [345](#t1) | **Type** : MDI | **Dimensions** : 362 x 377 DLU
+**Bloc** : Traitement | **Titre IDE** : Shoe Size
+
+<!-- FORM-DATA:
+{
+    "width":  362,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  4,
+    "controls":  [
+                     {
+                         "x":  44,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  47,
+                         "w":  208,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  13,
+                         "color":  "183",
+                         "text":  "Range",
+                         "parent":  null
+                     },
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  0,
+                         "w":  360,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  42,
+                         "color":  "182",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  14,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  15,
+                         "w":  259,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  10,
+                         "color":  "186",
+                         "text":  "Select a shoe size range",
+                         "parent":  2
+                     },
+                     {
+                         "x":  30,
+                         "type":  "table",
+                         "var":  "",
+                         "name":  "",
+                         "titleH":  12,
+                         "color":  "110",
+                         "w":  260,
+                         "y":  63,
+                         "fmt":  "",
+                         "parent":  null,
+                         "text":  "",
+                         "rowH":  33,
+                         "h":  267,
+                         "cols":  [
+                                      {
+                                          "title":  "",
+                                          "layer":  1,
+                                          "w":  256
+                                      }
+                                  ],
+                         "rows":  1
+                     },
+                     {
+                         "x":  1,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  341,
+                         "w":  360,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  34,
+                         "color":  "6",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  310,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  4,
+                         "w":  48,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  37,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  2
+                     },
+                     {
+                         "x":  284,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  346,
+                         "w":  77,
+                         "fmt":  "\u0026Exit",
+                         "name":  "",
+                         "h":  28,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  33,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  63,
+                         "w":  256,
+                         "fmt":  "128",
+                         "name":  "pss_label",
+                         "h":  32,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  289,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  63,
+                         "w":  44,
+                         "fmt":  "ñ",
+                         "name":  "",
+                         "h":  94,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  289,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  223,
+                         "w":  44,
+                         "fmt":  "ò",
+                         "name":  "",
+                         "h":  107,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "345",
+    "height":  377
+}
+-->
+
+<details>
+<summary><strong>Boutons : 4 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| Exit | 284,346 | Quitte le programme |
+| 128 | 33,63 | Bouton fonctionnel |
+| ñ | 289,63 | Bouton fonctionnel |
+| ò | 289,223 | Bouton fonctionnel |
+
+</details>
+
+## 9. NAVIGATION
+
+Ecran unique: **Shoe Size**
+
+### 9.3 Structure hierarchique (1 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **345.1** | [**Shoe Size** (345)](#t1) [mockup](#ecran-t1) | MDI | 362x377 | Traitement |
+
+### 9.4 Algorigramme
+
+```mermaid
+flowchart TD
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+```
+
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+
+<!-- TAB:Donnees -->
+
+## 10. TABLES
+
+### Tables utilisees (1)
+
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 1620 | Table_1620 |  | MEM | R |   |   | 1 |
+
+### Colonnes par table (0 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 1620 - Table_1620 (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+*(Programme sans variables locales mappees)*
+
+## 12. EXPRESSIONS
+
+**4 / 4 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 1 | 5 |
+| OTHER | 3 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 4 | `IF(VG142,[E],[D])` | [RM-001](#rm-RM-001) |
+
+#### OTHER (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 3 | `GetParam('SERVICE')` | - |
+| OTHER | 2 | `[C]` | - |
+| OTHER | 1 | `P.i.o.Cat shoe size [A]` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Skier Profile (IDE 212)](PVE-IDE-212.md) -> **Choix - Category shoe size (IDE 345)**
+
+```mermaid
+graph LR
+    T345[345 Choix - Category s...]
+    style T345 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC143[143 START]
+    style CC143 fill:#f59e0b
+    CC185[185 Menu]
+    style CC185 fill:#f59e0b
+    CC187[187 Main Sale-664]
+    style CC187 fill:#f59e0b
+    CC364[364 Main Sale-664]
+    style CC364 fill:#f59e0b
+    CC212[212 Skier Profile]
+    style CC212 fill:#3fb950
+    CC187 --> CC212
+    CC364 --> CC212
+    CC185 --> CC187
+    CC185 --> CC364
+    CC143 --> CC185
+    CC1 --> CC143
+    CC212 --> T345
+```
+
+### 13.2 Callers
+
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [212](PVE-IDE-212.md) | Skier Profile | 1 |
+
+### 13.3 Callees (programmes appeles)
+
+```mermaid
+graph LR
+    T345[345 Choix - Category s...]
+    style T345 fill:#58a6ff
+    NONE[Aucun callee]
+    T345 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
+```
+
+### 13.4 Detail Callees avec contexte
+
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
+
+## 14. RECOMMANDATIONS MIGRATION
+
+### 14.1 Profil du programme
+
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 8 | Programme compact |
+| Expressions | 4 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 8) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
+
+### 14.2 Plan de migration par bloc
+
+#### Traitement (1 tache: 1 ecran, 0 traitement)
+
+- **Strategie** : 1 composant(s) UI (Razor/React) avec formulaires et validation.
+- Decomposer les taches en services unitaires testables.
+
+### 14.3 Dependances critiques
+
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+
+---
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-03 19:41*

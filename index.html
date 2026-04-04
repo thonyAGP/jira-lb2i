@@ -1,0 +1,3096 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenSpec Viewer - Lecteur Magic</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    // Initialize Mermaid with dark theme
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'dark',
+        themeVariables: {
+          primaryColor: '#58a6ff',
+          primaryTextColor: '#e6edf3',
+          primaryBorderColor: '#30363d',
+          lineColor: '#8b949e',
+          secondaryColor: '#21262d',
+          tertiaryColor: '#161b22',
+          background: '#0d1117',
+          mainBkg: '#21262d',
+          nodeBorder: '#30363d',
+          clusterBkg: '#161b22',
+          clusterBorder: '#30363d',
+          titleColor: '#e6edf3',
+          edgeLabelBackground: '#21262d'
+        },
+        flowchart: {
+          curve: 'basis',
+          padding: 15
+        }
+      });
+    });
+
+    // Function to render Mermaid diagrams - LAZY RENDERING
+    // Only renders diagrams in currently visible sections to avoid display:none issues
+    async function renderMermaidDiagrams() {
+      // Find the visible section (for tabbed specs) or use whole document
+      const visibleSection = document.querySelector('.spec-section.active') || document.getElementById('content');
+      if (!visibleSection) return;
+
+      // Try multiple selectors - marked.js may use different class names
+      const selectors = [
+        'pre code.language-mermaid',
+        'pre code.mermaid',
+        'code.language-mermaid',
+        'code.mermaid'
+      ];
+
+      let mermaidBlocks = [];
+      for (const selector of selectors) {
+        const blocks = visibleSection.querySelectorAll(selector);
+        if (blocks.length > 0) {
+          mermaidBlocks = Array.from(blocks);
+          break;
+        }
+      }
+
+      // Also find by content - look for flowchart or graph keywords
+      if (mermaidBlocks.length === 0) {
+        visibleSection.querySelectorAll('pre code').forEach(block => {
+          const text = block.textContent.trim();
+          if (text.startsWith('flowchart') || text.startsWith('graph') || text.startsWith('sequenceDiagram')) {
+            mermaidBlocks.push(block);
+          }
+        });
+      }
+
+      // Convert code blocks to mermaid divs and collect for rendering
+      const divsToRender = [];
+      mermaidBlocks.forEach((block, index) => {
+        const pre = block.parentElement;
+        // Skip if already converted to mermaid div
+        if (pre.classList.contains('mermaid') || pre.querySelector('svg')) {
+          return;
+        }
+        const container = document.createElement('div');
+        container.className = 'mermaid';
+        container.id = 'mermaid-' + Date.now() + '-' + index;
+        container.textContent = block.textContent;
+        pre.replaceWith(container);
+        divsToRender.push(container);
+      });
+
+      // Render only newly created divs (avoid re-rendering already rendered ones)
+      if (divsToRender.length > 0) {
+        try {
+          await mermaid.run({ nodes: divsToRender });
+        } catch (e) {
+          console.error('Mermaid rendering error:', e);
+        }
+      }
+    }
+
+    function preprocessFormData(markdown) {
+      // Magic color ID to CSS color mapping
+      const magicColors = {
+        '195': '#008080', '120': '#cc0000', '143': '#cc0000',
+        '6': '#000080', '1': '#000000', '2': '#800000', '3': '#008000',
+        '4': '#808000', '5': '#000080', '7': '#808080', '8': '#c0c0c0',
+        '9': '#0000ff', '10': '#00ff00', '11': '#00ffff', '12': '#ff0000',
+        '13': '#ff00ff', '14': '#ffff00', '15': '#ffffff'
+      };
+      function getColor(colorId) {
+        if (!colorId) return '';
+        return magicColors[String(colorId)] || '';
+      }
+      // Derive button label: fmt (strip &) > name (strip "Bouton ") > "Btn"
+      function btnText(c) {
+        if (c.fmt) return c.fmt.replace(/&/g, '');
+        if (c.name) return c.name.replace(/^Bouton\s*/i, '');
+        return 'Btn';
+      }
+      // Check if a STATIC is a group box (large area with text)
+      function isGroupBox(c) {
+        return c.type === 'label' && c.text && c.w > 200 && c.h > 50;
+      }
+      // Check if a STATIC is a background element (large, no text)
+      function isBackground(c) {
+        return c.type === 'label' && !c.text && (c.w > 200 || c.h > 30);
+      }
+
+      return markdown.replace(/<!--\s*FORM-DATA:\s*\n([\s\S]*?)\n\s*-->/g, (match, jsonStr) => {
+        try {
+          const data = JSON.parse(jsonStr.trim());
+          const ctrls = data.controls || [];
+
+          // Per-form DLU scaling using Magic Horizontal/Vertical factors
+          // Magic DLU: higher factor = denser grid (more DLU per pixel)
+          // So scaling is INVERSE: sx = base × (ref / form_factor)
+          // Calibrated base: sx=0.65, sy=2.0 at h=8, v=8 (ADH IDE 237 T1)
+          const hf = data.hFactor || 4;
+          const vf = data.vFactor || 8;
+          const sx = 0.65 * (8 / hf);  // h=8→0.65, h=4→1.30
+          const sy = 2.0 * (8 / vf);   // v=8→2.0,  v=4→4.0
+          const w = Math.round((data.width || 700) * sx);
+
+          let maxY = 100;
+          ctrls.forEach(c => {
+            const bottom = c.y * sy + c.h * sy;
+            if (bottom > maxY) maxY = bottom;
+          });
+          maxY += 30;
+
+          let html = `<div class="magic-mockup" style="width:${Math.min(w, 900)}px">`;
+          html += `<div class="magic-mockup-title"><span>${data.taskId || data.type || 'Form'}</span>`;
+          html += `<div class="win-btns"><span class="win-btn">_</span><span class="win-btn">\u25a1</span><span class="win-btn">\u00d7</span></div>`;
+          html += `</div>`;
+          html += `<div class="magic-mockup-body" style="height:${maxY}px">`;
+
+          // Render group boxes first (behind other controls)
+          ctrls.filter(c => isGroupBox(c)).forEach(c => {
+            const cx = Math.round(c.x * sx);
+            const cy = Math.round(c.y * sy);
+            const cw = Math.round(c.w * sx);
+            const ch = Math.round(c.h * sy);
+            html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:0">`;
+            html += `<div class="magic-ctrl-groupbox" style="width:100%;height:100%"><span class="groupbox-title">${c.text}</span></div>`;
+            html += `</div>`;
+          });
+
+          // Render normal controls
+          ctrls.forEach(c => {
+            if (isGroupBox(c) || isBackground(c)) return;
+
+            const cx = Math.round(c.x * sx);
+            const cy = Math.round(c.y * sy);
+            const cw = Math.round(c.w * sx);
+            const ch = Math.round(c.h * sy);
+            const varTag = c.var ? `<span class="magic-ctrl-var">${c.var}</span>` : '';
+            const col = getColor(c.color);
+            const colStyle = col ? `color:${col};` : '';
+
+            switch (c.type) {
+              case 'label': {
+                const txt = c.text || '';
+                if (!txt) break;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-static" style="${colStyle}">${txt}</div>`;
+                html += `</div>`;
+                break;
+              }
+
+              case 'edit': {
+                const placeholder = c.fmt || '';
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;z-index:1">`;
+                html += `<div class="magic-ctrl-edit" style="height:${ch}px;${colStyle}">`;
+                if (placeholder) html += `<span class="edit-placeholder">${placeholder}</span>`;
+                html += `</div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+              }
+
+              case 'button':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:2">`;
+                html += `<div class="magic-ctrl-button" style="width:100%;height:100%">${btnText(c)}</div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'checkbox':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-checkbox"><span class="chk-box">\u2610</span> ${c.text || c.name || ''}</div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'combobox':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;z-index:1">`;
+                html += `<div class="magic-ctrl-combo" style="height:${ch}px"><span>${c.fmt || ''}</span><span class="combo-arrow">\u25bc</span></div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'radio':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-radio"><span class="radio-dot">\u25cb</span> ${c.text || c.name || ''}</div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'listbox':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-listbox" style="height:100%"><div class="lb-item">${c.text || 'Item 1'}</div><div class="lb-item">Item 2</div></div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'table': {
+                const cols = c.cols || [];
+                const titleH = Math.round((c.titleH || 12) * sy);
+                const rowH = Math.round((c.rowH || 15) * sy);
+                const nRows = c.rows || 4;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-table" style="height:100%">`;
+                // Column headers
+                if (cols.length > 0) {
+                  html += `<div class="tbl-header-row" style="height:${titleH}px">`;
+                  cols.forEach(col => {
+                    const colW = Math.round(col.w * sx);
+                    html += `<div class="tbl-col-header" style="width:${colW}px">${col.title || ''}</div>`;
+                  });
+                  html += `</div>`;
+                  // Data rows
+                  for (let r = 0; r < nRows; r++) {
+                    html += `<div class="tbl-data-row" style="height:${rowH}px">`;
+                    cols.forEach(col => {
+                      const colW = Math.round(col.w * sx);
+                      html += `<div class="tbl-cell" style="width:${colW}px"></div>`;
+                    });
+                    html += `</div>`;
+                  }
+                } else {
+                  html += `<div class="tbl-header-row" style="height:${titleH}px"><div class="tbl-col-header" style="flex:1">${c.text || 'Table'}</div></div>`;
+                  html += `<div class="tbl-body" style="flex:1"></div>`;
+                }
+                html += `</div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+              }
+
+              case 'image':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-image" style="width:100%;height:100%">\ud83d\uddbc</div>`;
+                html += `</div>`;
+                break;
+
+              case 'subform':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-subform" style="width:100%;height:100%">${c.text || 'Subform'}</div>`;
+                html += `</div>`;
+                break;
+
+              case 'tab':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-tab" style="width:100%;height:100%">`;
+                html += `<div class="tab-header"><span class="tab-active">${c.text || 'Tab 1'}</span><span class="tab-inactive">Tab 2</span></div>`;
+                html += `<div class="tab-body"></div>`;
+                html += `</div>`;
+                html += `</div>`;
+                break;
+
+              case 'line':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${Math.max(ch, 2)}px;z-index:1">`;
+                html += `<div class="magic-ctrl-line"></div>`;
+                html += `</div>`;
+                break;
+
+              default:
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;z-index:1">`;
+                html += `<div class="magic-ctrl-edit" style="height:${ch}px">${c.fmt || ''}</div>`;
+                html += varTag;
+                html += `</div>`;
+            }
+          });
+
+          html += `</div>`;
+          const counts = {};
+          ctrls.filter(c => !isBackground(c)).forEach(c => {
+            const t = isGroupBox(c) ? 'groupbox' : c.type;
+            counts[t] = (counts[t] || 0) + 1;
+          });
+          const parts = Object.entries(counts).map(([t, n]) => `${n} ${t}`);
+          html += `<div class="magic-mockup-legend">${parts.join(' | ')} | ${data.width}\u00d7${data.height} DLU</div>`;
+          html += `</div>`;
+
+          return html;
+        } catch (e) {
+          console.error('FORM-DATA parse error:', e);
+          return '<!-- FORM-DATA: parse error -->';
+        }
+      });
+    }
+  </script>
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent-hover: #79b8ff;
+      --success: #3fb950;
+      --warning: #d29922;
+      --danger: #f85149;
+      --purple: #a371f7;
+      --orange: #f0883e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 340px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-tertiary);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .sidebar-header h1 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-header h1::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+    }
+
+    .sidebar-header .version {
+      font-size: 10px;
+      color: var(--purple);
+      margin-bottom: 4px;
+    }
+    .sidebar-header .updated {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Search */
+    .search-container {
+      margin-top: 12px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 12px 8px 32px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-top: 4px;
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .search-results.show { display: block; }
+
+    .search-result-item {
+      padding: 10px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--bg-secondary); }
+
+    .search-result-item .result-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-result-item .result-meta {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .search-result-item .result-highlight {
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    .status-filter-container {
+      margin-top: 8px;
+    }
+
+    .status-filter-select {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 11px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .status-filter-select:focus {
+      border-color: var(--accent);
+    }
+
+    .status-filter-select option {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .search-filters {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .search-filter {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .search-filter:hover {
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+
+    .search-filter.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+    }
+
+    .search-stats {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .no-results {
+      padding: 20px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .search-help {
+      padding: 12px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+    }
+
+    .search-help code {
+      background: var(--bg-primary);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: 'SF Mono', 'Consolas', monospace;
+    }
+
+    .nav-section {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-section.collapsed .nav-items { display: none; }
+    .nav-section.collapsed .nav-section-title .collapse-icon { transform: rotate(-90deg); }
+
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      padding: 4px 16px 8px;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-section-title:hover { color: var(--text-primary); }
+
+    .nav-section-title .collapse-icon {
+      font-size: 10px;
+      transition: transform 0.2s;
+    }
+
+    .nav-section-title .count {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      padding: 10px 16px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+      position: relative;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--bg-tertiary);
+      color: var(--accent);
+      border-left-color: var(--accent);
+    }
+
+    .nav-item .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-item .title {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .nav-item .subtitle {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-item .actions {
+      display: none;
+      gap: 4px;
+    }
+
+    .nav-item:hover .actions { display: flex; }
+
+    .nav-item .action-btn {
+      width: 22px;
+      height: 22px;
+      border: none;
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-item .action-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .nav-item .action-btn.archive:hover { background: var(--warning); }
+    .nav-item .action-btn.unarchive:hover { background: var(--success); }
+
+    /* Badges */
+    .badge {
+      font-size: 9px;
+      padding: 3px 7px;
+      border-radius: 4px;
+      background: var(--bg-tertiary);
+      text-transform: uppercase;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+    }
+
+    .badge:hover { filter: brightness(1.2); }
+
+    .badge.resolved { background: var(--success); color: #000; }
+    .badge.dev { background: var(--warning); color: #000; }
+    .badge.spec { background: var(--purple); color: #fff; }
+    .badge.progress { background: var(--accent); color: #000; }
+    .badge.rejected { background: var(--danger); color: #fff; }
+
+    /* J+X Badge */
+    .days-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Consolas', monospace;
+    }
+
+    .days-badge.fresh { background: var(--success); color: #000; }      /* J+0 to J+2 */
+    .days-badge.normal { background: var(--accent); color: #000; }      /* J+3 to J+7 */
+    .days-badge.warning { background: var(--orange); color: #000; }     /* J+8 to J+14 */
+    .days-badge.old { background: var(--danger); color: #fff; }         /* J+15+ */
+
+    .date-info {
+      font-size: 10px;
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+
+    .archives-section { opacity: 0.8; }
+    .archives-section .nav-item { padding: 8px 16px; }
+    .archives-section .nav-item .title { font-size: 12px; }
+
+    /* Spec badges */
+    .spec-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .spec-badge.online { background: var(--success); color: #000; }
+    .spec-badge.batch { background: var(--warning); color: #000; }
+    .spec-badge.template { background: var(--purple); color: #fff; }
+
+    .spec-meta {
+      display: flex;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .spec-meta span {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .spec-meta .icon { opacity: 0.7; }
+
+    .complexity-badge {
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .complexity-badge.faible { background: var(--success); color: #000; }
+    .complexity-badge.moyen { background: var(--warning); color: #000; }
+    .complexity-badge.eleve { background: var(--danger); color: #fff; }
+
+    /* Folder groups for specs */
+    .folder-group {
+      margin-bottom: 2px;
+    }
+    .folder-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .folder-header:hover {
+      background: var(--bg-hover);
+    }
+    .folder-icon {
+      font-size: 14px;
+    }
+    .folder-name {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .folder-count {
+      font-size: 10px;
+      padding: 2px 6px;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      color: var(--text-secondary);
+    }
+    .folder-toggle {
+      font-size: 10px;
+      color: var(--text-secondary);
+      transition: transform 0.2s;
+    }
+    .folder-items {
+      padding-left: 8px;
+      border-left: 2px solid var(--border);
+      margin-left: 16px;
+      margin-top: 4px;
+      margin-bottom: 8px;
+    }
+    .folder-items.collapsed {
+      display: none;
+    }
+    .folder-items .nav-item {
+      padding: 6px 12px;
+    }
+
+    /* Spec header */
+    .spec-header {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .spec-header .spec-id {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--purple);
+    }
+
+    .spec-header .spec-title {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .spec-header .ticket-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 60%;
+    }
+
+    .spec-header .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .spec-header .meta-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+    }
+
+    .spec-header .meta-value {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* Status dropdown */
+    .status-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px;
+      z-index: 100;
+      min-width: 130px;
+    }
+
+    .status-dropdown.show { display: block; }
+
+    .status-option {
+      display: block;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .status-option:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    /* Save indicator */
+    .save-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--success);
+      color: #000;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .save-indicator.show { display: flex; align-items: center; gap: 8px; }
+    .save-indicator.error { background: var(--danger); color: #fff; }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      min-width: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px 24px;
+    }
+
+    .content {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    /* Typography */
+    .content h1 { font-size: 26px; font-weight: 600; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .content h2 { font-size: 22px; font-weight: 600; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .content h3 { font-size: 18px; font-weight: 600; margin: 24px 0 12px; color: var(--text-primary); }
+    .content h4 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; color: var(--text-secondary); }
+    .content p { margin: 12px 0; line-height: 1.7; color: var(--text-secondary); }
+    .content strong { color: var(--text-primary); }
+    .content a { color: var(--accent); text-decoration: none; }
+    .content a:hover { text-decoration: underline; }
+    .content ul, .content ol { margin: 12px 0; padding-left: 24px; color: var(--text-secondary); }
+    .content li { margin: 6px 0; line-height: 1.6; }
+    .content hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+    /* Tables */
+    .content table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; table-layout: fixed; }
+    .content th { background: var(--bg-tertiary); font-weight: 600; text-align: left; padding: 8px 10px; border: 1px solid var(--border); color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; }
+    .content td { padding: 8px 10px; border: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; word-break: break-word; }
+    .content tr:hover td { background: var(--bg-secondary); }
+    .content td:first-child { color: var(--text-primary); font-weight: 500; }
+    .content .table-wrapper { overflow-x: auto; max-width: 100%; margin: 16px 0; }
+    .content .table-wrapper table { margin: 0; }
+
+    /* Code */
+    .content code { font-family: 'SF Mono', 'Consolas', 'Monaco', monospace; font-size: 12px; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .content pre { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 16px; overflow-x: auto; margin: 16px 0; max-width: 100%; }
+    .content pre code { background: none; padding: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
+
+    /* Blockquote */
+    .content blockquote { border-left: 3px solid var(--accent); padding-left: 16px; margin: 16px 0; color: var(--text-secondary); font-style: italic; }
+
+    /* Welcome */
+    .welcome { text-align: center; padding: 64px 32px; }
+    .welcome h2 { border: none; color: var(--text-primary); }
+    .welcome p { max-width: 400px; margin: 12px auto; }
+
+    /* YAML Display */
+    .yaml-header {
+      background: var(--purple);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px 8px 0 0;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .yaml-header code {
+      background: rgba(255,255,255,0.2);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .yaml-icon { font-size: 18px; }
+    .yaml-content {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      padding: 16px;
+      margin: 0;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .yaml-content code {
+      color: var(--text-primary);
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    }
+
+    /* Loading */
+    .loading { text-align: center; padding: 48px; color: var(--text-secondary); }
+
+    /* Back button */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 13px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .back-link:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    /* Floating back button for intra-spec fragment navigation */
+    .fragment-back-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 100;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: all 0.2s;
+      animation: slideUp 0.3s ease-out;
+    }
+    .fragment-back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+    /* File tabs */
+    .file-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; flex-wrap: wrap; }
+    .file-tab { padding: 6px 12px; font-size: 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px 4px 0 0; cursor: pointer; color: var(--text-secondary); }
+    .file-tab:hover { color: var(--text-primary); }
+    .file-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+    .file-tab.commits { background: var(--bg-tertiary); border-color: var(--purple); color: var(--purple); }
+    .file-tab.commits:hover { background: var(--purple); color: #fff; }
+    .file-tab.commits.active { background: var(--purple); color: #fff; }
+
+    /* Spec section tabs */
+    .spec-tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 0; }
+    .spec-tab { padding: 10px 20px; font-size: 13px; font-weight: 600; background: transparent; border: none; border-bottom: 3px solid transparent; cursor: pointer; color: var(--text-secondary); transition: all 0.2s; margin-bottom: -2px; }
+    .spec-tab:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+    .spec-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    /* V6.0 tabs */
+    .spec-tab.fonctionnel { }
+    .spec-tab.fonctionnel.active { color: var(--success); border-bottom-color: var(--success); }
+    .spec-tab.technique { }
+    .spec-tab.technique.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .spec-tab.cartographie { }
+    .spec-tab.cartographie.active { color: var(--purple); border-bottom-color: var(--purple); }
+    /* V7.0 tabs */
+    .spec-tab.resume { }
+    .spec-tab.resume.active { color: var(--success); border-bottom-color: var(--success); }
+    .spec-tab.ecrans { }
+    .spec-tab.ecrans.active { color: #f59e0b; border-bottom-color: #f59e0b; }
+    .spec-tab.donnees { }
+    .spec-tab.donnees.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .spec-tab.connexions { }
+    .spec-tab.connexions.active { color: var(--purple); border-bottom-color: var(--purple); }
+    .spec-section { display: none; }
+    .spec-section.active { display: block; }
+
+    /* Analysis timing */
+    .analysis-timing { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; padding: 8px 12px; background: var(--bg-tertiary); border-radius: 6px; font-size: 12px; }
+    .analysis-timing .timing-item { display: flex; align-items: center; gap: 6px; }
+    .analysis-timing .timing-label { color: var(--text-secondary); }
+    .analysis-timing .timing-value { color: var(--text-primary); font-weight: 600; font-family: monospace; }
+    .analysis-timing .timing-duration { color: var(--success); font-weight: 700; }
+
+    /* Mermaid diagrams */
+    .mermaid {
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Magic Form Mockup Renderer */
+    .magic-mockup {
+      background: #d4d0c8;
+      border: 2px outset #fff;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+      border-radius: 0;
+      margin: 16px 0;
+      font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
+      font-size: 11px;
+      position: relative;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    .magic-mockup-title {
+      background: linear-gradient(to right, #0a246a, #3a6ea5);
+      color: #fff;
+      padding: 3px 6px;
+      font-weight: bold;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .magic-mockup-title .win-btns {
+      display: flex;
+      gap: 2px;
+    }
+    .magic-mockup-title .win-btn {
+      width: 16px;
+      height: 14px;
+      background: #c0c0c0;
+      border: 1px outset #fff;
+      font-size: 9px;
+      text-align: center;
+      line-height: 12px;
+      cursor: default;
+      color: #000;
+    }
+    .magic-mockup-body {
+      position: relative;
+      min-height: 120px;
+      padding: 4px;
+    }
+    .magic-ctrl {
+      position: absolute;
+      box-sizing: border-box;
+    }
+    /* Group box (large STATIC with text = frame) */
+    .magic-ctrl-groupbox {
+      border: 1px solid #808080;
+      border-radius: 0;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .magic-ctrl-groupbox .groupbox-title {
+      position: absolute;
+      top: -7px;
+      left: 8px;
+      background: #d4d0c8;
+      padding: 0 4px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #000;
+    }
+    /* Static label (STATIC control) */
+    .magic-ctrl-static {
+      font-size: 11px;
+      color: #000;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    /* Edit field */
+    .magic-ctrl-edit {
+      background: #fff;
+      border: 1px inset #808080;
+      padding: 1px 3px;
+      font-size: 11px;
+      color: #000;
+      height: 18px;
+      line-height: 18px;
+      overflow: hidden;
+    }
+    .magic-ctrl-edit .edit-placeholder {
+      color: #aaa;
+      font-style: italic;
+      font-size: 10px;
+    }
+    /* Push button */
+    .magic-ctrl-button {
+      background: linear-gradient(to bottom, #e8e8e8 0%, #c8c8c8 100%);
+      border: 2px outset #d4d0c8;
+      text-align: center;
+      cursor: default;
+      font-size: 11px;
+      font-weight: bold;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Checkbox */
+    .magic-ctrl-checkbox {
+      font-size: 11px;
+      color: #000;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .magic-ctrl-checkbox .chk-box {
+      font-size: 13px;
+      line-height: 1;
+    }
+    /* Combobox (dropdown) */
+    .magic-ctrl-combo {
+      background: #fff;
+      border: 1px inset #808080;
+      padding: 1px 3px;
+      font-size: 11px;
+      color: #000;
+      height: 18px;
+      line-height: 18px;
+      overflow: hidden;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .magic-ctrl-combo .combo-arrow {
+      background: #d4d0c8;
+      border: 1px outset #fff;
+      padding: 0 3px;
+      font-size: 8px;
+      line-height: 16px;
+    }
+    /* Radio button */
+    .magic-ctrl-radio {
+      font-size: 11px;
+      color: #000;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .magic-ctrl-radio .radio-dot { font-size: 13px; line-height: 1; }
+    /* Listbox */
+    .magic-ctrl-listbox {
+      background: #fff;
+      border: 1px inset #808080;
+      overflow: hidden;
+      font-size: 11px;
+    }
+    .magic-ctrl-listbox .lb-item {
+      padding: 1px 3px;
+      color: #000;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    /* Table control */
+    .magic-ctrl-table {
+      border: 1px solid #808080;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+    }
+    .magic-ctrl-table .tbl-header-row {
+      display: flex;
+      background: #d4d0c8;
+      border-bottom: 1px solid #808080;
+      flex-shrink: 0;
+    }
+    .magic-ctrl-table .tbl-col-header {
+      font-size: 10px;
+      font-weight: bold;
+      color: #000080;
+      padding: 1px 4px;
+      border-right: 1px solid #808080;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+    .magic-ctrl-table .tbl-col-header:last-child { border-right: none; }
+    .magic-ctrl-table .tbl-data-row {
+      display: flex;
+      border-bottom: 1px solid #e0e0e0;
+      flex-shrink: 0;
+    }
+    .magic-ctrl-table .tbl-cell {
+      border-right: 1px solid #e0e0e0;
+      font-size: 10px;
+      padding: 1px 3px;
+      overflow: hidden;
+    }
+    .magic-ctrl-table .tbl-cell:last-child { border-right: none; }
+    .magic-ctrl-table .tbl-body {
+      background: #fff;
+      flex: 1;
+    }
+    /* Image placeholder */
+    .magic-ctrl-image {
+      background: #e8e8e8;
+      border: 1px solid #808080;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #666;
+    }
+    /* Subform */
+    .magic-ctrl-subform {
+      background: #ececec;
+      border: 1px dashed #808080;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #666;
+      font-style: italic;
+    }
+    /* Tab control */
+    .magic-ctrl-tab {
+      border: 1px solid #808080;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .magic-ctrl-tab .tab-header {
+      display: flex;
+      background: #d4d0c8;
+    }
+    .magic-ctrl-tab .tab-active {
+      background: #fff;
+      border: 1px solid #808080;
+      border-bottom: none;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .magic-ctrl-tab .tab-inactive {
+      background: #c0c0c0;
+      border: 1px solid #808080;
+      border-bottom: none;
+      padding: 2px 8px;
+      font-size: 10px;
+      color: #666;
+    }
+    .magic-ctrl-tab .tab-body {
+      background: #fff;
+      flex: 1;
+      border-top: 1px solid #808080;
+    }
+    /* Separator line */
+    .magic-ctrl-line {
+      border-top: 1px solid #808080;
+      border-bottom: 1px solid #fff;
+      height: 0;
+      width: 100%;
+      margin-top: 50%;
+    }
+    /* Variable overlay */
+    .magic-ctrl-var {
+      position: absolute;
+      top: -1px;
+      right: 2px;
+      font-size: 8px;
+      color: #58a6ff;
+      font-family: 'SF Mono', 'Consolas', monospace;
+      opacity: 0.8;
+    }
+    .magic-mockup-legend {
+      font-size: 10px;
+      color: var(--text-secondary);
+      padding: 4px 6px;
+      border-top: 1px solid #999;
+      background: #c0c0c0;
+    }
+
+    /* Ticket header with date/time */
+    .ticket-header {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .ticket-header .ticket-id {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .ticket-header .ticket-meta {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .ticket-header .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .ticket-header .meta-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+    }
+
+    .ticket-header .meta-value {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .ticket-header .meta-value.highlight {
+      color: var(--success);
+      font-family: 'SF Mono', 'Consolas', monospace;
+    }
+
+    /* Analysis time in sidebar */
+    .analysis-time {
+      font-size: 10px;
+      color: var(--purple);
+      font-family: 'SF Mono', 'Consolas', monospace;
+      margin-top: 2px;
+    }
+
+    /* Commits panel */
+    .commits-panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .commits-panel h3 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      color: var(--purple);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .commit-item {
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      border-left: 3px solid var(--purple);
+    }
+
+    .commit-item .commit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .commit-item .commit-hash {
+      font-family: 'SF Mono', 'Consolas', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      background: var(--bg-primary);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .commit-item .commit-date {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .commit-item .commit-message {
+      font-size: 13px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .commit-item .commit-files {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .commit-item .commit-files code {
+      font-size: 10px;
+      background: var(--bg-primary);
+      padding: 1px 4px;
+      border-radius: 3px;
+      margin-right: 4px;
+    }
+
+    .commits-empty {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary);
+    }
+
+    .commits-loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary);
+    }
+
+    /* Sort controls */
+    .sort-controls {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+      margin-right: 8px;
+    }
+
+    .sort-btn {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-secondary);
+      font-size: 10px;
+      padding: 2px 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .sort-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .sort-btn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    /* Ticket group header */
+    .ticket-group-header {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--purple);
+      padding: 8px 16px 4px;
+      letter-spacing: 0.5px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
+
+    .ticket-group-header:first-child {
+      border-top: none;
+      margin-top: 0;
+    }
+
+    .btn-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 12px;
+      margin-top: 16px;
+    }
+
+    .btn-github:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+    /* Auth overlay */
+    .auth-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-primary);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      width: 320px;
+      text-align: center;
+    }
+    .auth-box h2 {
+      color: var(--text-primary);
+      margin: 0 0 0.5rem;
+      font-size: 1.3rem;
+    }
+    .auth-box p {
+      color: var(--text-secondary);
+      margin: 0 0 1.5rem;
+      font-size: 0.85rem;
+    }
+    .auth-box input[type="password"] {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      box-sizing: border-box;
+      margin-bottom: 1rem;
+    }
+    .auth-box input[type="password"]:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .auth-box button {
+      width: 100%;
+      padding: 0.6rem;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .auth-box button:hover {
+      opacity: 0.9;
+    }
+    .auth-error {
+      color: #f85149;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      min-height: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <!-- Auth gate -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-box">
+      <h2>OpenSpec Viewer</h2>
+      <p>Acces restreint — entrez le mot de passe</p>
+      <input type="password" id="authPassword" placeholder="Mot de passe" autofocus>
+      <button onclick="checkAuth()">Connexion</button>
+      <div class="auth-error" id="authError"></div>
+    </div>
+  </div>
+
+  <aside class="sidebar" style="display:none">
+    <div class="sidebar-header">
+      <h1>OpenSpec Viewer</h1>
+      <div class="version">v1.4.0</div>
+      <div class="updated" id="lastUpdated"></div>
+      <div class="updated" id="lastBuild"></div>
+      <div class="search-container">
+        <span class="search-icon">&#x1F50D;</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Rechercher (table:849, access:W, vente...)" autocomplete="off">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+      <div class="search-filters">
+        <span class="search-filter" data-filter="write" onclick="toggleSearchFilter('write')">Write Only</span>
+        <span class="search-filter" data-filter="online" onclick="toggleSearchFilter('online')">Online</span>
+        <span class="search-filter" data-filter="batch" onclick="toggleSearchFilter('batch')">Batch</span>
+      </div>
+      <div class="status-filter-container">
+        <select id="statusFilter" class="status-filter-select" onchange="applyStatusFilter(this.value)">
+          <option value="">Tous les statuts</option>
+          <option value="en-cours">En cours</option>
+          <option value="analyse-complete">Analyse complete</option>
+          <option value="en-attente">En attente</option>
+          <option value="blocage-ou-attente-infos">Blocage/Attente infos</option>
+          <option value="livré-recette">Livre recette</option>
+          <option value="prêt">Pret</option>
+          <option value="idée">Idee</option>
+          <option value="fermé">Ferme</option>
+          <option value="recette-ok">Recette OK</option>
+          <option value="closed">Closed</option>
+        </select>
+      </div>
+    </div>
+    <div id="navigation"></div>
+  </aside>
+
+  <main class="main" style="display:none">
+    <div class="content" id="content">
+      <div class="welcome">
+        <h2>OpenSpec Viewer</h2>
+        <p>Selectionnez un document dans la barre laterale.</p>
+      </div>
+    </div>
+  </main>
+
+  <div class="save-indicator" id="saveIndicator">
+    <span id="saveText">Sauvegarde...</span>
+  </div>
+
+  <script>
+    let _authed = false;
+    let _ticketsLoadError = null;
+
+    const content = document.getElementById('content');
+    const navigation = document.getElementById('navigation');
+    const lastUpdatedEl = document.getElementById('lastUpdated');
+    const lastBuildEl = document.getElementById('lastBuild');
+    const saveIndicator = document.getElementById('saveIndicator');
+    const saveText = document.getElementById('saveText');
+    let indexData = null;
+    let currentSort = 'analysis'; // 'id', 'analysis', 'created'
+
+    // Custom renderer: add id attributes to headings for anchor navigation
+    const renderer = new marked.Renderer();
+    renderer.heading = function({ text, depth }) {
+      // Strip HTML tags for ID generation, keep text
+      const rawText = text.replace(/<[^>]+>/g, '').trim();
+      const id = rawText.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
+        .replace(/[^\w\s-]/g, '')  // remove special chars
+        .replace(/\s+/g, '-')     // spaces to hyphens
+        .replace(/-+/g, '-')      // collapse multiple hyphens
+        .replace(/^-|-$/g, '');   // trim hyphens
+      return `<h${depth} id="${id}">${text}</h${depth}>\n`;
+    };
+    marked.setOptions({ breaks: true, gfm: true, renderer });
+
+    // Navigation history stack for back button between specs
+    const navHistory = [];
+
+    // Fragment navigation history (intra-spec tab switching)
+    let fragmentBackState = null; // { tab, scrollTop }
+
+    function showFragmentBackButton(fromTab) {
+      // Remove existing button if any
+      const existing = document.getElementById('fragmentBackBtn');
+      if (existing) existing.remove();
+      const btn = document.createElement('button');
+      btn.className = 'fragment-back-btn';
+      btn.id = 'fragmentBackBtn';
+      btn.innerHTML = `← Retour onglet ${fromTab}`;
+      btn.onclick = () => {
+        if (fragmentBackState) {
+          // Save state before switchSpecTab clears it via hideFragmentBackButton
+          const { tab, scrollTop } = fragmentBackState;
+          fragmentBackState = null;
+          const b = document.getElementById('fragmentBackBtn');
+          if (b) b.remove();
+          switchSpecTab(tab);
+          setTimeout(() => { content.scrollTop = scrollTop; }, 100);
+        }
+      };
+      document.body.appendChild(btn);
+    }
+
+    function hideFragmentBackButton() {
+      const btn = document.getElementById('fragmentBackBtn');
+      if (btn) btn.remove();
+      fragmentBackState = null;
+    }
+
+    const STATUSES = [
+      { id: 'progress', label: 'En cours' },
+      { id: 'spec', label: 'Specification' },
+      { id: 'dev', label: 'Developpement' },
+      { id: 'resolved', label: 'Resolu' },
+      { id: 'rejected', label: 'Rejete/KO' }
+    ];
+
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    let searchIndex = null;
+    let specsData = [];
+    let activeFilters = new Set();
+    let debounceTimer = null;
+
+    function buildSearchIndex() {
+      if (!indexData || !indexData.specs) return;
+
+      specsData = indexData.specs.filter(s => !s.id.startsWith('TEMPLATE'));
+
+      searchIndex = lunr(function() {
+        this.ref('id');
+        this.field('specId', { boost: 15 });  // ADH-IDE-237
+        this.field('ide', { boost: 15 });      // 237
+        this.field('title', { boost: 10 });
+        this.field('project', { boost: 5 });
+        this.field('type');
+        this.field('tables');
+        this.field('folder');
+
+        specsData.forEach(spec => {
+          this.add({
+            id: spec.id,
+            specId: spec.id || '',
+            ide: spec.ide ? spec.ide.toString() : '',
+            title: spec.title || '',
+            project: spec.project || '',
+            type: spec.type || '',
+            tables: spec.tables ? spec.tables.toString() : '0',
+            folder: spec.folder || ''
+          });
+        });
+
+        // Index tickets too
+        const allTickets = [
+          ...(indexData.tickets ? indexData.tickets.active || [] : []),
+          ...(indexData.tickets ? indexData.tickets.archived || [] : [])
+        ];
+        allTickets.forEach(t => {
+          this.add({
+            id: 'ticket:' + t.id,
+            specId: t.id || '',
+            ide: (t.id || '').replace(/\D/g, ''),
+            title: t.title || '',
+            project: t.id ? t.id.split('-')[0] : '',
+            type: 'ticket',
+            tables: '',
+            folder: ''
+          });
+        });
+      });
+    }
+
+    function performSearch(query) {
+      if (!searchIndex || !query.trim()) {
+        searchResults.classList.remove('show');
+        return;
+      }
+
+      const filters = parseSearchQuery(query);
+      let results = [];
+
+      // Use Lunr for text search if there's text beyond filters
+      const allTickets = [
+        ...(indexData.tickets ? indexData.tickets.active || [] : []),
+        ...(indexData.tickets ? indexData.tickets.archived || [] : [])
+      ];
+      if (filters.text) {
+        try {
+          const lunrResults = searchIndex.search(filters.text + '*');
+          results = lunrResults.map(r => {
+            if (r.ref.startsWith('ticket:')) {
+              const ticketId = r.ref.replace('ticket:', '');
+              const t = allTickets.find(t => t.id === ticketId);
+              return t ? { id: t.id, title: t.title, file: t.file, _isTicket: true, status: t.status } : null;
+            }
+            return specsData.find(s => s.id === r.ref);
+          }).filter(Boolean);
+        } catch (e) {
+          // If Lunr fails, do simple text match
+          const lowerText = filters.text.toLowerCase();
+          const specResults = specsData.filter(s =>
+            (s.id && s.id.toLowerCase().includes(lowerText)) ||
+            (s.ide && s.ide.toString().includes(lowerText)) ||
+            (s.title && s.title.toLowerCase().includes(lowerText)) ||
+            (s.project && s.project.toLowerCase().includes(lowerText)) ||
+            (s.folder && s.folder.toLowerCase().includes(lowerText))
+          );
+          const ticketResults = allTickets.filter(t =>
+            (t.id && t.id.toLowerCase().includes(lowerText)) ||
+            (t.title && t.title.toLowerCase().includes(lowerText))
+          ).map(t => ({ id: t.id, title: t.title, file: t.file, _isTicket: true, status: t.status }));
+          results = [...ticketResults, ...specResults];
+        }
+      } else {
+        results = [...specsData];
+      }
+
+      // Apply filters
+      if (filters.table) {
+        const tableNum = parseInt(filters.table);
+        if (!isNaN(tableNum)) {
+          // Filter specs that have this table (we'd need table data in index)
+          // For now, just show all - enhancement: add tables array to index.json
+        }
+      }
+
+      if (filters.access === 'w' || activeFilters.has('write')) {
+        // Filter for write access - would need table access info in index
+        // For now, use heuristic: programs with >0 write tables
+      }
+
+      if (filters.type || activeFilters.has('online') || activeFilters.has('batch')) {
+        const targetType = filters.type || (activeFilters.has('online') ? 'online' : 'batch');
+        results = results.filter(s =>
+          s.type && s.type.toLowerCase() === targetType.toLowerCase()
+        );
+      }
+
+      displaySearchResults(results, query);
+    }
+
+    function parseSearchQuery(query) {
+      const filters = { text: query };
+
+      // Extract table: filter
+      const tableMatch = query.match(/table:(\S+)/i);
+      if (tableMatch) {
+        filters.table = tableMatch[1];
+        filters.text = filters.text.replace(tableMatch[0], '').trim();
+      }
+
+      // Extract access: filter
+      const accessMatch = query.match(/access:([rw])/i);
+      if (accessMatch) {
+        filters.access = accessMatch[1].toLowerCase();
+        filters.text = filters.text.replace(accessMatch[0], '').trim();
+      }
+
+      // Extract type: filter
+      const typeMatch = query.match(/type:(\S+)/i);
+      if (typeMatch) {
+        filters.type = typeMatch[1];
+        filters.text = filters.text.replace(typeMatch[0], '').trim();
+      }
+
+      return filters;
+    }
+
+    function displaySearchResults(results, query) {
+      if (results.length === 0) {
+        searchResults.innerHTML = `
+          <div class="no-results">
+            Aucun resultat pour "${query}"
+          </div>
+          <div class="search-help">
+            <strong>Syntaxe de recherche:</strong><br>
+            <code>table:849</code> - Recherche par table<br>
+            <code>access:W</code> - Tables en ecriture<br>
+            <code>type:Online</code> - Type de programme<br>
+            Ou simplement du texte libre
+          </div>
+        `;
+        searchResults.classList.add('show');
+        return;
+      }
+
+      let html = results.slice(0, 15).map(spec => {
+        if (spec._isTicket) {
+          const statusClass = spec.status === 'en-cours' ? 'en-cours' : spec.status === 'recette-ok' ? 'recette-ok' : spec.status;
+          return `
+            <div class="search-result-item" onclick="selectSearchResult('${spec.file}')">
+              <div class="result-title">
+                <span>${spec.id}</span>
+                <span class="status-badge ${statusClass}">${(spec.status || 'en-cours').toUpperCase()}</span>
+              </div>
+              <div class="result-meta">
+                <span>${spec.title}</span>
+              </div>
+            </div>
+          `;
+        }
+        const typeClass = spec.type ? spec.type.toLowerCase() : '';
+        return `
+          <div class="search-result-item" onclick="selectSearchResult('${spec.file}')">
+            <div class="result-title">
+              <span>${spec.project} IDE ${spec.ide}</span>
+              <span class="spec-badge ${typeClass}">${spec.type || '-'}</span>
+            </div>
+            <div class="result-meta">
+              <span>${spec.title}</span>
+            </div>
+            <div class="result-meta">
+              <span>Tables: ${spec.tables || 0}</span>
+              <span>Expr: ${spec.expressions || 0}</span>
+              ${spec.folder ? `<span>Dossier: ${spec.folder}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (results.length > 15) {
+        html += `<div class="search-help">Et ${results.length - 15} autres resultats...</div>`;
+      }
+
+      searchResults.innerHTML = html;
+      searchResults.classList.add('show');
+    }
+
+    function selectSearchResult(file) {
+      searchResults.classList.remove('show');
+      searchInput.value = '';
+      loadFile(file);
+      setActiveNav(file);
+      window.location.hash = encodeURIComponent(file);
+    }
+
+    function toggleSearchFilter(filter) {
+      const filterEl = document.querySelector(`[data-filter="${filter}"]`);
+      if (activeFilters.has(filter)) {
+        activeFilters.delete(filter);
+        filterEl.classList.remove('active');
+      } else {
+        activeFilters.add(filter);
+        filterEl.classList.add('active');
+      }
+
+      // Re-run search if there's a query
+      if (searchInput.value.trim()) {
+        performSearch(searchInput.value);
+      }
+    }
+
+    // Search event listeners
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => performSearch(e.target.value), 150);
+    });
+
+    searchInput.addEventListener('focus', () => {
+      if (searchInput.value.trim()) {
+        performSearch(searchInput.value);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-container')) {
+        searchResults.classList.remove('show');
+      }
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        searchResults.classList.remove('show');
+        searchInput.blur();
+      }
+    });
+
+    // Keyboard shortcut: Ctrl+K or / to focus search
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey && e.key === 'k') || (e.key === '/' && document.activeElement !== searchInput)) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+
+    function getDaysAgo(dateStr) {
+      if (!dateStr) return null;
+      const date = new Date(dateStr);
+      const today = new Date();
+      const diffTime = today - date;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    }
+
+    function getDaysBadgeClass(days) {
+      if (days === null) return 'normal';
+      if (days <= 2) return 'fresh';
+      if (days <= 7) return 'normal';
+      if (days <= 14) return 'warning';
+      return 'old';
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatDateTime(dateStr) {
+      if (!dateStr) return '-';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) +
+             ' ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatFullDateTime(dateStr) {
+      if (!dateStr) return '-';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      }) + ' a ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    async function init() {
+      if (!_authed) return;
+      try {
+        const response = await fetch('index.json?t=' + Date.now());
+        indexData = await response.json();
+
+        // Load tickets from separate tickets/index.json
+        await loadTicketsIndex();
+
+        buildNavigation();
+        buildSearchIndex();
+        updateLastUpdated();
+
+        if (window.location.hash) {
+          const file = decodeURIComponent(window.location.hash.slice(1));
+          loadFile(file);
+          setActiveNav(file);
+        }
+      } catch (err) {
+        navigation.innerHTML = '<div style="padding:16px;color:var(--danger)">Erreur: index.json non trouve</div>';
+      }
+    }
+
+    async function loadTicketsIndex() {
+      const AUTO_ARCHIVE_DAYS = 2;
+      try {
+        const resp = await fetch('tickets/index.json?t=' + Date.now());
+        if (!resp.ok) throw new Error('tickets/index.json HTTP ' + resp.status);
+        const rawText = await resp.text();
+
+        // PROTECTION: detect git merge conflict markers
+        if (rawText.includes('<<<<<<<') || rawText.includes('>>>>>>>') || rawText.includes('\n=======\n')) {
+          const errorMsg = 'ERREUR: tickets/index.json contient des marqueurs de conflit git. Fichier corrompu.';
+          console.error(errorMsg, rawText.substring(0, 200));
+          _ticketsLoadError = errorMsg;
+          indexData.tickets = { active: [], archived: [] };
+          return;
+        }
+
+        let ticketsData;
+        try {
+          ticketsData = JSON.parse(rawText);
+        } catch (parseErr) {
+          const errorMsg = 'ERREUR: tickets/index.json JSON invalide — ' + parseErr.message;
+          console.error(errorMsg, rawText.substring(0, 200));
+          _ticketsLoadError = errorMsg;
+          indexData.tickets = { active: [], archived: [] };
+          return;
+        }
+
+        const localTickets = ticketsData.localTickets || [];
+
+        if (localTickets.length === 0) {
+          console.warn('tickets/index.json: localTickets est vide');
+        }
+
+        const mapped = localTickets
+          .filter(t => t.hasLocalData)
+          .map(t => ({
+            id: t.key,
+            title: t.summary,
+            status: t.status || 'en-cours',
+            file: 'tickets/' + t.key + '/analysis.md',
+            program: t.program || '',
+            lastAnalysis: t.lastAnalysis || '',
+            createdDate: t.createdDate || '',
+            resolvedDate: t.resolvedDate || ''
+          }));
+
+        // Auto-archive: uses resolvedDate from Jira sync (real Jira status)
+        const now = new Date();
+        const isAutoArchived = (t) => {
+          if (!t.resolvedDate) return false;
+          const daysSince = Math.floor((now - new Date(t.resolvedDate)) / (1000 * 60 * 60 * 24));
+          return daysSince > AUTO_ARCHIVE_DAYS;
+        };
+
+        const active = mapped.filter(t => !isAutoArchived(t));
+        const archived = mapped.filter(t => isAutoArchived(t));
+
+        indexData.tickets = { active, archived };
+        _ticketsLoadError = null;
+      } catch (e) {
+        const errorMsg = 'ERREUR chargement tickets: ' + e.message;
+        console.error(errorMsg);
+        _ticketsLoadError = errorMsg;
+        indexData.tickets = { active: [], archived: [] };
+      }
+    }
+
+    function updateLastUpdated() {
+      const date = new Date(indexData.lastUpdated);
+      lastUpdatedEl.textContent = `Maj: ${date.toLocaleDateString('fr-FR')} ${date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}`;
+      // Build timestamp embedded at commit time
+      const BUILD_DATE = '2026-01-29 21:10';
+      lastBuildEl.textContent = `Build: ${BUILD_DATE}`;
+    }
+
+    function buildNavigation() {
+      let html = '';
+
+      const allReports = indexData.reports || [];
+      const principal = allReports.filter(r => r.category === 'principal');
+      if (principal.length > 0) {
+        html += buildSection('Principal', principal.map(r => ({ title: r.title, file: r.file })), principal.length);
+      }
+
+      // Specs section
+      if (indexData.specs && indexData.specs.length > 0) {
+        html += buildSpecsSection('Specifications Programmes', indexData.specs);
+      }
+
+      const reports = allReports.filter(r => r.category === 'reports');
+      if (reports.length > 0) {
+        html += buildSection('Rapports', reports.map(r => ({ title: r.title, file: r.file })), reports.length);
+      }
+
+      // Show error banner if tickets failed to load
+      if (_ticketsLoadError) {
+        html += `<div style="padding:10px 16px;margin:8px;background:var(--danger);color:#fff;border-radius:6px;font-size:12px;line-height:1.4">
+          <strong>⚠ Tickets non charges</strong><br>${escapeHtml(_ticketsLoadError)}
+        </div>`;
+      }
+
+      html += buildTicketSection('Tickets en cours', indexData.tickets.active, false);
+      html += buildTicketSection('Archives', indexData.tickets.archived, true);
+
+      navigation.innerHTML = html;
+
+      // Section collapse
+      document.querySelectorAll('.nav-section-title').forEach(title => {
+        title.addEventListener('click', (e) => {
+          if (e.target.closest('.action-btn')) return;
+          title.parentElement.classList.toggle('collapsed');
+        });
+      });
+
+      // Nav items
+      document.querySelectorAll('.nav-item[data-file]').forEach(item => {
+        item.addEventListener('click', (e) => {
+          if (e.target.closest('.action-btn') || e.target.closest('.badge') || e.target.closest('.status-dropdown')) return;
+          const file = item.dataset.file;
+          loadFile(file);
+          setActiveNav(file);
+          window.location.hash = encodeURIComponent(file);
+        });
+      });
+
+      // Close dropdowns on outside click
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.badge') && !e.target.closest('.status-dropdown')) {
+          document.querySelectorAll('.status-dropdown.show').forEach(d => d.classList.remove('show'));
+        }
+      });
+    }
+
+    function buildSection(title, items, count) {
+      let html = `<nav class="nav-section">
+        <div class="nav-section-title">
+          <span class="collapse-icon">▼</span>
+          ${title}
+          <span class="count">${count}</span>
+        </div>
+        <div class="nav-items">`;
+      items.forEach(item => {
+        html += `<a class="nav-item" data-file="${item.file}">
+          <div class="row"><span class="title">${item.title}</span></div>
+        </a>`;
+      });
+      html += '</div></nav>';
+      return html;
+    }
+
+    function buildSpecsSection(title, specs) {
+      const count = specs.filter(s => !s.id.startsWith('TEMPLATE')).length;
+
+      // Group specs by folder
+      const byFolder = {};
+      const templates = [];
+
+      specs.forEach(spec => {
+        if (spec.type === 'Template' || spec.id.startsWith('TEMPLATE')) {
+          templates.push(spec);
+        } else {
+          const folder = spec.folder || spec.project || 'Non classe';
+          if (!byFolder[folder]) byFolder[folder] = [];
+          byFolder[folder].push(spec);
+        }
+      });
+
+      // Sort folders alphabetically, "Non classe" and "Unknown" last
+      const sortedFolders = Object.keys(byFolder).sort((a, b) => {
+        if (a === 'Non classe' || a === 'Unknown') return 1;
+        if (b === 'Non classe' || b === 'Unknown') return -1;
+        return a.localeCompare(b);
+      });
+
+      let html = `<nav class="nav-section collapsed">
+        <div class="nav-section-title">
+          <span class="collapse-icon">▼</span>
+          ${title}
+          <span class="count">${count}</span>
+        </div>
+        <div class="nav-items">`;
+
+      // Build folder groups
+      sortedFolders.forEach(folder => {
+        const folderSpecs = byFolder[folder].sort((a, b) => a.ide - b.ide);
+        const folderCount = folderSpecs.length;
+        const folderId = 'folder-' + folder.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+
+        html += `<div class="folder-group">
+          <div class="folder-header" onclick="toggleFolder('${folderId}')">
+            <span class="folder-icon">📁</span>
+            <span class="folder-name">${folder}</span>
+            <span class="folder-count">${folderCount}</span>
+            <span class="folder-toggle" id="toggle-${folderId}">▶</span>
+          </div>
+          <div class="folder-items collapsed" id="${folderId}">`;
+
+        folderSpecs.forEach(spec => {
+          const typeClass = spec.type.toLowerCase();
+          const complexityClass = spec.complexity ? spec.complexity.toLowerCase().replace('é', 'e').replace('-', '') : '';
+          const versionBadge = spec.specVersion ? `<span class="spec-badge" style="background:var(--purple)">v${spec.specVersion}</span>` : '';
+
+          html += `<a class="nav-item" data-file="${spec.file}" data-spec-id="${spec.id}">
+            <div class="row">
+              <span class="title">${spec.project} IDE ${spec.ide}</span>
+              ${versionBadge}
+              <span class="spec-badge ${typeClass}">${spec.type}</span>
+            </div>
+            <div class="subtitle">${spec.title}</div>
+            <div class="spec-meta">
+              <span><span class="icon">📊</span> ${spec.tables || 0} tables</span>
+              <span><span class="icon">📋</span> ${spec.tasks || 0} params</span>
+              ${spec.expressions ? `<span><span class="icon">⚡</span> ${spec.expressions} expr</span>` : ''}
+              ${spec.complexity && spec.complexity !== '-' ? `<span class="complexity-badge ${complexityClass}">${spec.complexity}</span>` : ''}
+            </div>
+          </a>`;
+        });
+
+        html += '</div></div>';
+      });
+
+      // Add templates at the end
+      if (templates.length > 0) {
+        html += `<div class="folder-group templates-group">
+          <div class="folder-header" onclick="toggleFolder('folder-templates')">
+            <span class="folder-icon">📄</span>
+            <span class="folder-name">Templates</span>
+            <span class="folder-count">${templates.length}</span>
+            <span class="folder-toggle" id="toggle-folder-templates">▶</span>
+          </div>
+          <div class="folder-items collapsed" id="folder-templates">`;
+
+        templates.forEach(spec => {
+          html += `<a class="nav-item" data-file="${spec.file}" data-spec-id="${spec.id}">
+            <div class="row">
+              <span class="title">${spec.id}</span>
+              <span class="spec-badge template">Template</span>
+            </div>
+            <div class="subtitle">${spec.title}</div>
+          </a>`;
+        });
+
+        html += '</div></div>';
+      }
+
+      html += '</div></nav>';
+      return html;
+    }
+
+    function toggleFolder(folderId) {
+      const folderItems = document.getElementById(folderId);
+      const toggleIcon = document.getElementById('toggle-' + folderId);
+      if (folderItems && toggleIcon) {
+        folderItems.classList.toggle('collapsed');
+        toggleIcon.textContent = folderItems.classList.contains('collapsed') ? '▶' : '▼';
+      }
+    }
+
+    function sortTickets(tickets, sortBy) {
+      return [...tickets].sort((a, b) => {
+        if (sortBy === 'id') {
+          // Extract number from ID (PMS-1359 -> 1359, CMDS-174321 -> 174321)
+          const numA = parseInt(a.id.replace(/\D/g, '')) || 0;
+          const numB = parseInt(b.id.replace(/\D/g, '')) || 0;
+          return numA - numB;
+        } else if (sortBy === 'analysis') {
+          const dateA = new Date(a.lastAnalysisTime || a.lastAnalysis || '1970-01-01');
+          const dateB = new Date(b.lastAnalysisTime || b.lastAnalysis || '1970-01-01');
+          return dateB - dateA; // Most recent first
+        } else if (sortBy === 'created') {
+          const dateA = new Date(a.createdDate || '1970-01-01');
+          const dateB = new Date(b.createdDate || '1970-01-01');
+          return dateB - dateA; // Most recent first
+        }
+        return 0;
+      });
+    }
+
+    function changeSort(newSort) {
+      currentSort = newSort;
+      buildNavigation();
+    }
+
+    function buildTicketSection(title, tickets, isArchive) {
+      const archiveClass = isArchive ? 'archives-section collapsed' : '';
+
+      // Sort controls only for active tickets
+      const sortControlsHtml = !isArchive ? `
+        <div class="sort-controls">
+          <button class="sort-btn ${currentSort === 'id' ? 'active' : ''}" onclick="event.stopPropagation(); changeSort('id')" title="Tri par numero">#</button>
+          <button class="sort-btn ${currentSort === 'analysis' ? 'active' : ''}" onclick="event.stopPropagation(); changeSort('analysis')" title="Tri par derniere analyse">📊</button>
+          <button class="sort-btn ${currentSort === 'created' ? 'active' : ''}" onclick="event.stopPropagation(); changeSort('created')" title="Tri par date creation">📅</button>
+        </div>
+      ` : '';
+
+      let html = `<nav class="nav-section ${archiveClass}">
+        <div class="nav-section-title">
+          <span class="collapse-icon">▼</span>
+          ${title}
+          ${sortControlsHtml}
+          <span class="count">${tickets.length}</span>
+        </div>
+        <div class="nav-items">`;
+
+      // Sort tickets
+      const sortedTickets = sortTickets(tickets, currentSort);
+
+      // Group by type (PMS vs CMDS) for active tickets only
+      if (!isArchive) {
+        const pmsTickets = sortedTickets.filter(t => t.id.startsWith('PMS-'));
+        const cmdsTickets = sortedTickets.filter(t => t.id.startsWith('CMDS-'));
+        const otherTickets = sortedTickets.filter(t => !t.id.startsWith('PMS-') && !t.id.startsWith('CMDS-'));
+
+        if (pmsTickets.length > 0) {
+          html += `<div class="ticket-group-header">PMS - Bugfix/Release (${pmsTickets.length})</div>`;
+          html += pmsTickets.map(t => buildTicketItem(t, isArchive)).join('');
+        }
+        if (cmdsTickets.length > 0) {
+          html += `<div class="ticket-group-header">CMDS - Support (${cmdsTickets.length})</div>`;
+          html += cmdsTickets.map(t => buildTicketItem(t, isArchive)).join('');
+        }
+        if (otherTickets.length > 0) {
+          html += `<div class="ticket-group-header">Autres (${otherTickets.length})</div>`;
+          html += otherTickets.map(t => buildTicketItem(t, isArchive)).join('');
+        }
+      } else {
+        // Archives: keep together, no grouping
+        html += sortedTickets.map(t => buildTicketItem(t, isArchive)).join('');
+      }
+
+      html += '</div></nav>';
+      return html;
+    }
+
+    function buildTicketItem(t, isArchive) {
+      const days = getDaysAgo(t.createdDate);
+      const daysClass = getDaysBadgeClass(days);
+      const daysText = days !== null ? `J+${days}` : '';
+
+      const actionBtn = isArchive
+        ? `<button class="action-btn unarchive" onclick="unarchiveTicket('${t.id}')" title="Desarchiver">↩</button>`
+        : `<button class="action-btn archive" onclick="archiveTicket('${t.id}')" title="Archiver">📥</button>`;
+
+      // Use lastAnalysisTime if available, fallback to lastAnalysis
+      const analysisTimeStr = t.lastAnalysisTime || t.lastAnalysis;
+      const lastAnalysisText = analysisTimeStr ? formatDateTime(analysisTimeStr) : '-';
+      const createdText = t.createdDate ? `Cree: ${formatDate(t.createdDate)}` : '';
+      const programText = t.program ? `<span class="date-info" style="color: var(--accent);">${t.program}</span>` : '';
+
+      return `<a class="nav-item" data-file="${t.file}" data-ticket-id="${t.id}">
+        <div class="row">
+          <span class="title">${t.id}</span>
+          ${daysText ? `<span class="days-badge ${daysClass}">${daysText}</span>` : ''}
+          <span class="badge ${t.status}" onclick="toggleStatusDropdown(event, '${t.id}')">${t.status}</span>
+          <div class="actions">${actionBtn}</div>
+        </div>
+        <div class="subtitle">
+          <span>${t.title}</span>
+        </div>
+        <div class="subtitle">
+          <span class="date-info">${createdText}</span>
+          ${programText}
+        </div>
+        <div class="analysis-time">Analyse: ${lastAnalysisText}</div>
+        <div class="status-dropdown" id="dropdown-${t.id}">
+          ${STATUSES.map(s => `<div class="status-option" onclick="changeStatus('${t.id}', '${s.id}')">${s.label}</div>`).join('')}
+        </div>
+      </a>`;
+    }
+
+    function toggleStatusDropdown(e, ticketId) {
+      e.stopPropagation();
+      const dropdown = document.getElementById('dropdown-' + ticketId);
+      document.querySelectorAll('.status-dropdown.show').forEach(d => {
+        if (d !== dropdown) d.classList.remove('show');
+      });
+      dropdown.classList.toggle('show');
+    }
+
+    async function changeStatus(ticketId, newStatus) {
+      document.querySelectorAll('.status-dropdown.show').forEach(d => d.classList.remove('show'));
+      await callApi('change-status', ticketId, newStatus);
+    }
+
+    async function archiveTicket(ticketId) {
+      await callApi('archive', ticketId);
+    }
+
+    async function unarchiveTicket(ticketId) {
+      await callApi('unarchive', ticketId);
+    }
+
+    async function callApi(action, ticketId, newStatus = null) {
+      saveIndicator.classList.remove('error');
+      saveIndicator.classList.add('show');
+      saveText.textContent = 'Sauvegarde...';
+
+      try {
+        const body = { action, ticketId };
+        if (newStatus) body.newStatus = newStatus;
+
+        const response = await fetch('/api/update-ticket', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Erreur API');
+        }
+
+        saveText.textContent = '✓ Sauvegarde! Actualisation dans 30s...';
+
+        // Refresh data after a short delay (Vercel redeploys)
+        setTimeout(async () => {
+          saveIndicator.classList.remove('show');
+          // Reload the index
+          const newIndex = await fetch('index.json?t=' + Date.now());
+          indexData = await newIndex.json();
+          buildNavigation();
+          updateLastUpdated();
+        }, 2000);
+
+      } catch (err) {
+        console.error('API Error:', err);
+        saveText.textContent = '✗ Erreur: ' + err.message;
+        saveIndicator.classList.add('error');
+        setTimeout(() => {
+          saveIndicator.classList.remove('show');
+        }, 4000);
+      }
+    }
+
+    // Intercept spec links in rendered Markdown and make them navigable
+    function attachSpecLinks(container) {
+      const links = container.querySelectorAll('a[href]');
+      links.forEach(link => {
+        const href = link.getAttribute('href');
+
+        // 1) Internal fragment links (#ecran-t1, #t1, etc.)
+        if (href.startsWith('#')) {
+          link.style.cursor = 'pointer';
+          link.style.color = 'var(--accent)';
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = href.slice(1);
+            const target = document.getElementById(targetId);
+            if (target) {
+              // Save current tab + scroll for back navigation
+              const currentActiveSection = document.querySelector('.spec-section.active');
+              const currentTab = currentActiveSection?.dataset?.tab;
+
+              const targetSection = target.closest('.spec-section');
+              const targetTab = targetSection?.dataset?.tab;
+
+              // If navigating to a different tab, show back button
+              if (targetTab && currentTab && targetTab !== currentTab) {
+                fragmentBackState = { tab: currentTab, scrollTop: content.scrollTop };
+                switchSpecTab(targetTab, true);
+                showFragmentBackButton(currentTab);
+                setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+              } else {
+                // Same tab: just scroll, hide back button
+                hideFragmentBackButton();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }
+          });
+          return; // Don't process as spec link
+        }
+
+        // 2) Cross-spec links: ADH-IDE-238.md, specs/ADH-IDE-238.md, renders/ADH-IDE-238.md
+        const specMatch = href.match(/(?:(specs|renders)\/)?([A-Z]{2,4}-IDE-\d+)\.md$/i);
+        if (specMatch) {
+          const folder = specMatch[1] || 'specs'; // Default to specs, but preserve renders if specified
+          const specId = specMatch[2].toUpperCase();
+          link.style.cursor = 'pointer';
+          link.style.color = 'var(--accent)';
+          link.style.textDecoration = 'underline';
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Push current spec to history for back navigation
+            const currentHash = decodeURIComponent(window.location.hash.slice(1));
+            if (currentHash) navHistory.push(currentHash);
+            const specPath = `${folder}/${specId}.md`;
+            loadFile(specPath);
+            setActiveNav(specPath);
+          });
+        }
+
+        // 3) Annotation YAML links
+        const annotationMatch = href.match(/annotations\/([A-Z]{2,4}-IDE-\d+)\.yaml$/i);
+        if (annotationMatch) {
+          const annotId = annotationMatch[1].toUpperCase();
+          link.style.cursor = 'pointer';
+          link.style.color = 'var(--purple)';
+          link.style.textDecoration = 'underline';
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const currentHash = decodeURIComponent(window.location.hash.slice(1));
+            if (currentHash) navHistory.push(currentHash);
+            loadFile(`annotations/${annotId}.yaml`);
+          });
+        }
+      });
+    }
+
+    // Navigate back to previous spec
+    function navigateBack() {
+      if (navHistory.length > 0) {
+        const prevPath = navHistory.pop();
+        loadFile(prevPath);
+        setActiveNav(prevPath);
+      }
+    }
+
+    function setActiveNav(file) {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.file === file);
+      });
+    }
+
+    async function loadFile(path, showCommits = false) {
+      if (!_authed) return;
+      hideFragmentBackButton();
+      content.innerHTML = '<div class="loading">Chargement...</div>';
+
+      const isTicket = path.includes('tickets/');
+      const isSpec = path.includes('specs/');
+      const isRender = path.includes('renders/');
+      const isAnnotation = path.includes('annotations/');
+      let headerHtml = '';
+      let tabsHtml = '';
+      let ticketId = null;
+      let ticketData = null;
+
+      // Back link for navigation history
+      let backLinkHtml = '';
+      if (isRender || isAnnotation) {
+        backLinkHtml = `<a class="back-link" onclick="loadFile('SPECS_ENRICHIES_V21.md'); setActiveNav('SPECS_ENRICHIES_V21.md'); window.location.hash='SPECS_ENRICHIES_V21.md'">← Retour aux Specs Enrichies V2.1</a>`;
+      } else if (navHistory.length > 0) {
+        // Dynamic back button from navigation history
+        const prevFile = navHistory[navHistory.length - 1];
+        const prevName = prevFile.replace('specs/', '').replace('.md', '');
+        backLinkHtml = `<a class="back-link" onclick="navigateBack()">← Retour ${prevName}</a>`;
+      }
+
+      // Handle Specs
+      if (isSpec && indexData.specs) {
+        const specData = indexData.specs.find(s => s.file === path);
+        if (specData && !specData.id.startsWith('TEMPLATE')) {
+          const typeClass = specData.type.toLowerCase();
+          const complexityClass = specData.complexity ? specData.complexity.toLowerCase().replace('é', 'e').replace('-', '') : '';
+          const versionBadge = specData.specVersion ? `<span class="spec-badge" style="background:var(--purple)">v${specData.specVersion}</span>` : '';
+          const xmlInfo = specData.xmlFile ? `<div class="meta-item"><span class="meta-label">Fichier XML</span><span class="meta-value" style="font-family:monospace;color:var(--accent);">${specData.xmlFile}</span></div>` : '';
+          const exprInfo = specData.expressions ? `<div class="meta-item"><span class="meta-label">Expressions</span><span class="meta-value">${specData.expressions}</span></div>` : '';
+          const calleesInfo = specData.callees && specData.callees.length > 0 ? `<div class="meta-item"><span class="meta-label">Appelle</span><span class="meta-value" style="font-size:11px;">${specData.callees.join(', ')}</span></div>` : '';
+
+          headerHtml = `
+            <div class="spec-header">
+              <div>
+                <span class="spec-id">${specData.project} IDE ${specData.ide} ${versionBadge}</span>
+                <div class="spec-title">${specData.title}</div>
+              </div>
+              <div class="ticket-meta">
+                ${xmlInfo}
+                <div class="meta-item">
+                  <span class="meta-label">Type</span>
+                  <span class="meta-value"><span class="spec-badge ${typeClass}">${specData.type}</span></span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Tables</span>
+                  <span class="meta-value">${specData.tables || 0}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Params</span>
+                  <span class="meta-value">${specData.tasks || 0}</span>
+                </div>
+                ${exprInfo}
+                <div class="meta-item">
+                  <span class="meta-label">Complexite</span>
+                  <span class="meta-value"><span class="complexity-badge ${complexityClass}">${specData.complexity}</span></span>
+                </div>
+                ${calleesInfo}
+              </div>
+            </div>`;
+        }
+      }
+
+      if (isTicket) {
+        const ticketDir = path.substring(0, path.lastIndexOf('/') + 1);
+        const files = ['analysis.md', 'resolution.md', 'implementation.md', 'notes.md'];
+        const currentFile = path.substring(path.lastIndexOf('/') + 1);
+
+        // Extract ticket ID from path
+        const match = path.match(/tickets\/([A-Z]+-\d+)\//);
+        if (match) {
+          ticketId = match[1];
+          // Find ticket data in index
+          ticketData = [...indexData.tickets.active, ...indexData.tickets.archived]
+            .find(t => t.id === ticketId);
+        }
+
+        // Build ticket header with date/time
+        if (ticketData) {
+          const analysisTime = ticketData.lastAnalysisTime || ticketData.lastAnalysis;
+          const fullDateTime = formatFullDateTime(analysisTime);
+          const jiraUrl = `https://clubmed.atlassian.net/browse/${ticketId}`;
+
+          headerHtml = `
+            <div class="ticket-header">
+              <div>
+                <a href="${jiraUrl}" target="_blank" class="ticket-id">${ticketId}</a>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">${ticketData.title}</div>
+              </div>
+              <div class="ticket-meta">
+                <div class="meta-item">
+                  <span class="meta-label">Derniere analyse</span>
+                  <span class="meta-value highlight">${fullDateTime}</span>
+                </div>
+                ${ticketData.program ? `
+                <div class="meta-item">
+                  <span class="meta-label">Programme</span>
+                  <span class="meta-value">${ticketData.program}</span>
+                </div>` : ''}
+                <div class="meta-item">
+                  <span class="meta-label">Statut</span>
+                  <span class="meta-value">${ticketData.status}</span>
+                </div>
+              </div>
+            </div>`;
+        }
+
+        // Build tabs with Commits tab
+        tabsHtml = '<div class="file-tabs">';
+        for (const f of files) {
+          const fullPath = ticketDir + f;
+          const active = (f === currentFile && !showCommits) ? 'active' : '';
+          const label = f.replace('.md', '');
+          tabsHtml += `<div class="file-tab ${active}" onclick="loadFile('${fullPath}'); setActiveNav('${ticketDir}analysis.md')">${label}</div>`;
+        }
+        // Add Commits tab
+        const commitsActive = showCommits ? 'active' : '';
+        tabsHtml += `<div class="file-tab commits ${commitsActive}" onclick="loadFile('${ticketDir}analysis.md', true); setActiveNav('${ticketDir}analysis.md')">📜 Commits</div>`;
+        tabsHtml += '</div>';
+      }
+
+      // If showing commits panel
+      if (showCommits && ticketId) {
+        content.innerHTML = headerHtml + tabsHtml + buildCommitsPanel(ticketId);
+        return;
+      }
+
+      try {
+        const response = await fetch(path + '?t=' + Date.now());
+        if (!response.ok) throw new Error('Fichier non trouve');
+        const text = await response.text();
+
+        // Handle YAML files with syntax highlighting
+        const isYaml = path.endsWith('.yaml') || path.endsWith('.yml');
+        if (isYaml) {
+          const fileName = path.split('/').pop();
+          const yamlHeader = `<div class="yaml-header"><span class="yaml-icon">📋</span> Annotation YAML: <code>${fileName}</code></div>`;
+          content.innerHTML = backLinkHtml + headerHtml + yamlHeader + `<pre class="yaml-content"><code>${escapeHtml(text)}</code></pre>`;
+          return;
+        }
+
+        // Handle HTML files via iframe (dashboards, reports)
+        const isHtml = path.endsWith('.html');
+        if (isHtml) {
+          const fileName = path.split('/').pop().replace('.html', '');
+          content.innerHTML = backLinkHtml + `<iframe src="${path}?t=${Date.now()}" style="width:100%;height:calc(100vh - 60px);border:none;border-radius:8px;"></iframe>`;
+          return;
+        }
+
+        // Check for spec tabs (<!-- TAB:xxx --> markers) - works for both specs/ and renders/
+        if ((isSpec || isRender) && text.includes('<!-- TAB:')) {
+          const renderedContent = renderSpecWithTabs(text, headerHtml);
+          content.innerHTML = backLinkHtml + renderedContent;
+        } else if (isRender) {
+          // V2.1 renders without TAB markers
+          content.innerHTML = backLinkHtml + headerHtml + tabsHtml + marked.parse(preprocessFormData(text));
+        } else {
+          content.innerHTML = backLinkHtml + headerHtml + tabsHtml + marked.parse(preprocessFormData(text));
+        }
+        // Render Mermaid diagrams
+        await renderMermaidDiagrams();
+        // Attach click handlers to spec links
+        attachSpecLinks(content);
+      } catch (err) {
+        content.innerHTML = headerHtml + tabsHtml + `<div class="welcome"><h2>Fichier non trouve</h2><p>${path}</p></div>`;
+      }
+    }
+
+    function renderSpecWithTabs(markdown, headerHtml) {
+      // Extract timing info from header - supports V6.0 (start → end) and V7.0 (date only)
+      let timingHtml = '';
+      const timingMatchV6 = markdown.match(/>\s*\*\*Analyse\*\*:\s*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\s*→\s*(\d{2}:\d{2})/);
+      const timingMatchV7 = markdown.match(/>\s*\*\*Analyse\*\*:\s*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\s*$/m);
+      const pipelineMatch = markdown.match(/>\s*\*\*Pipeline\*\*:\s*(.+)$/m);
+      const structureMatch = markdown.match(/>\s*\*\*Structure\*\*:\s*(.+)$/m);
+
+      if (timingMatchV6) {
+        const [_, date, startTime, endTime] = timingMatchV6;
+        const duration = calculateDuration(startTime, endTime);
+        timingHtml = `
+          <div class="analysis-timing">
+            <div class="timing-item"><span class="timing-label">📅 Date:</span><span class="timing-value">${date}</span></div>
+            <div class="timing-item"><span class="timing-label">🕐 Début:</span><span class="timing-value">${startTime}</span></div>
+            <div class="timing-item"><span class="timing-label">🕑 Fin:</span><span class="timing-value">${endTime}</span></div>
+            <div class="timing-item"><span class="timing-label">⏱️ Durée:</span><span class="timing-value timing-duration">${duration}</span></div>
+            ${pipelineMatch ? `<div class="timing-item"><span class="timing-label">🔧 Pipeline:</span><span class="timing-value">${pipelineMatch[1]}</span></div>` : ''}
+          </div>`;
+      } else if (timingMatchV7) {
+        const [_, date, time] = timingMatchV7;
+        timingHtml = `
+          <div class="analysis-timing">
+            <div class="timing-item"><span class="timing-label">📅 Date:</span><span class="timing-value">${date}</span></div>
+            <div class="timing-item"><span class="timing-label">🕐 Heure:</span><span class="timing-value">${time}</span></div>
+            ${pipelineMatch ? `<div class="timing-item"><span class="timing-label">🔧 Pipeline:</span><span class="timing-value">${pipelineMatch[1]}</span></div>` : ''}
+            ${structureMatch ? `<div class="timing-item"><span class="timing-label">📐 Structure:</span><span class="timing-value">${structureMatch[1]}</span></div>` : ''}
+          </div>`;
+      }
+
+      // Parse tabs from markdown
+      const tabRegex = /<!--\s*TAB:(\w+)\s*-->/g;
+      const tabs = [];
+      let match;
+      while ((match = tabRegex.exec(markdown)) !== null) {
+        tabs.push({ name: match[1], position: match.index });
+      }
+
+      if (tabs.length === 0) {
+        return headerHtml + timingHtml + marked.parse(markdown);
+      }
+
+      // Extract header content (before first tab)
+      const headerContent = markdown.substring(0, tabs[0].position);
+
+      // Build tabs HTML
+      const tabLabels = {
+        // V6.0
+        'Fonctionnel': '📋 Fonctionnel',
+        'Technique': '⚙️ Technique',
+        'Cartographie': '🗺️ Cartographie',
+        // V7.0
+        'Resume': '📋 Resume',
+        'Ecrans': '🖥️ Ecrans',
+        'Donnees': '🗄️ Donnees',
+        'Connexions': '🔗 Connexions'
+      };
+
+      let tabsBarHtml = '<div class="spec-tabs">';
+      tabs.forEach((tab, i) => {
+        const label = tabLabels[tab.name] || tab.name;
+        const active = i === 0 ? 'active' : '';
+        const tabClass = tab.name.toLowerCase();
+        tabsBarHtml += `<div class="spec-tab ${tabClass} ${active}" onclick="switchSpecTab('${tab.name}')">${label}</div>`;
+      });
+      tabsBarHtml += '</div>';
+
+      // Build sections HTML
+      let sectionsHtml = '';
+      tabs.forEach((tab, i) => {
+        const startPos = tab.position + `<!-- TAB:${tab.name} -->`.length;
+        const endPos = i < tabs.length - 1 ? tabs[i + 1].position : markdown.length;
+        const sectionContent = markdown.substring(startPos, endPos).trim();
+        const active = i === 0 ? 'active' : '';
+        const processedContent = preprocessFormData(sectionContent);
+        sectionsHtml += `<div class="spec-section ${active}" data-tab="${tab.name}">${marked.parse(processedContent)}</div>`;
+      });
+
+      return headerHtml + timingHtml + marked.parse(preprocessFormData(headerContent)) + tabsBarHtml + sectionsHtml;
+    }
+
+    function calculateDuration(startTime, endTime) {
+      const [startH, startM] = startTime.split(':').map(Number);
+      const [endH, endM] = endTime.split(':').map(Number);
+      let totalMinutes = (endH * 60 + endM) - (startH * 60 + startM);
+      if (totalMinutes < 0) totalMinutes += 24 * 60; // Handle day wrap
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      if (hours > 0) {
+        return `${hours}h ${minutes}min`;
+      }
+      return `${minutes} min`;
+    }
+
+    function switchSpecTab(tabName, isFragmentNav = false) {
+      // Update tab buttons
+      document.querySelectorAll('.spec-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.textContent.includes(tabName) || tab.getAttribute('onclick')?.includes(tabName));
+      });
+      // Update sections
+      document.querySelectorAll('.spec-section').forEach(section => {
+        section.classList.toggle('active', section.dataset.tab === tabName);
+      });
+      // Re-render Mermaid diagrams for newly visible tab
+      setTimeout(() => renderMermaidDiagrams(), 100);
+      // Manual tab click: hide fragment back button
+      if (!isFragmentNav) {
+        hideFragmentBackButton();
+      }
+    }
+
+    function buildCommitsPanel(ticketId) {
+      // Get commits data from index (if available) or show placeholder
+      const ticket = [...indexData.tickets.active, ...indexData.tickets.archived]
+        .find(t => t.id === ticketId);
+
+      const commits = ticket?.commits || [];
+      const githubUrl = `https://github.com/thonyAGP/lecteur-magic/commits/master/.openspec/tickets/${ticketId}`;
+
+      if (commits.length === 0) {
+        return `
+          <div class="commits-panel">
+            <h3>📜 Historique Git</h3>
+            <div class="commits-empty">
+              <p>Les commits pour ce ticket seront synchronises automatiquement.</p>
+              <p style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);">
+                En attendant, vous pouvez consulter l'historique sur GitHub :
+              </p>
+              <a href="${githubUrl}" target="_blank" class="btn-github">
+                🔗 Voir sur GitHub
+              </a>
+            </div>
+          </div>`;
+      }
+
+      let commitsHtml = commits.map(c => `
+        <div class="commit-item">
+          <div class="commit-header">
+            <span class="commit-hash">${c.hash?.substring(0, 7) || '?'}</span>
+            <span class="commit-date">${formatDateTime(c.date)}</span>
+          </div>
+          <div class="commit-message">${c.message || '-'}</div>
+          ${c.files ? `<div class="commit-files">${c.files.map(f => `<code>${f}</code>`).join('')}</div>` : ''}
+        </div>
+      `).join('');
+
+      return `
+        <div class="commits-panel">
+          <h3>📜 Historique Git (${commits.length} commits)</h3>
+          ${commitsHtml}
+          <a href="${githubUrl}" target="_blank" class="btn-github">
+            🔗 Voir tous les commits sur GitHub
+          </a>
+        </div>`;
+    }
+
+    // Deep linking: handle browser back/forward
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash;
+      if (hash) {
+        const file = decodeURIComponent(hash.slice(1));
+        loadFile(file);
+        setActiveNav(file);
+      }
+    });
+
+    // Status filter: show/hide tickets based on selected status
+    function applyStatusFilter(status) {
+      const navItems = document.querySelectorAll('.nav-item[data-ticket-id]');
+      const groupHeaders = document.querySelectorAll('.ticket-group-header');
+
+      navItems.forEach(item => {
+        if (!status) {
+          item.style.display = '';
+          return;
+        }
+        const badge = item.querySelector('.badge');
+        const itemStatus = badge ? badge.textContent.trim() : '';
+        item.style.display = (itemStatus === status) ? '' : 'none';
+      });
+
+      // Hide group headers if all their tickets are hidden
+      groupHeaders.forEach(header => {
+        let next = header.nextElementSibling;
+        let hasVisible = false;
+        while (next && !next.classList.contains('ticket-group-header')) {
+          if (next.classList.contains('nav-item') && next.style.display !== 'none') {
+            hasVisible = true;
+            break;
+          }
+          next = next.nextElementSibling;
+        }
+        header.style.display = hasVisible || !status ? '' : 'none';
+      });
+    }
+
+    window.loadFile = loadFile;
+    window.setActiveNav = setActiveNav;
+    window.archiveTicket = archiveTicket;
+    window.unarchiveTicket = unarchiveTicket;
+    window.changeStatus = changeStatus;
+    window.toggleStatusDropdown = toggleStatusDropdown;
+    window.selectSearchResult = selectSearchResult;
+    window.toggleSearchFilter = toggleSearchFilter;
+    window.applyStatusFilter = applyStatusFilter;
+
+    // --- Auth gate ---
+    const AUTH_HASH = '9926fd2d7517d7f5f0f115655cd02ae44db588d1174fb6266eb949d9a3bba0ac';
+    const AUTH_KEY = 'openspec_auth';
+    const AUTH_TS_KEY = 'openspec_auth_ts';
+    const AUTH_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
+
+    async function sha256(text) {
+      const data = new TextEncoder().encode(text);
+      const buf = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function isAuthValid() {
+      const hash = localStorage.getItem(AUTH_KEY);
+      const ts = parseInt(localStorage.getItem(AUTH_TS_KEY) || '0', 10);
+      return hash === AUTH_HASH && (Date.now() - ts) < AUTH_TTL_MS;
+    }
+
+    let _initRunning = false;
+    function unlockSite() {
+      if (_initRunning) return;
+      _initRunning = true;
+      _authed = true;
+      const overlay = document.getElementById('authOverlay');
+      if (overlay) overlay.remove();
+      document.querySelector('.sidebar').style.display = '';
+      document.querySelector('.main').style.display = '';
+      // Wait for layout to stabilize before loading data
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          init().finally(() => { _initRunning = false; });
+        });
+      });
+    }
+
+    async function checkAuth() {
+      const pwd = document.getElementById('authPassword').value;
+      if (!pwd) return;
+      const hash = await sha256(pwd);
+      if (hash === AUTH_HASH) {
+        localStorage.setItem(AUTH_KEY, hash);
+        localStorage.setItem(AUTH_TS_KEY, String(Date.now()));
+        unlockSite();
+      } else {
+        document.getElementById('authError').textContent = 'Mot de passe incorrect';
+        document.getElementById('authPassword').value = '';
+        document.getElementById('authPassword').focus();
+      }
+    }
+
+    document.getElementById('authPassword').addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkAuth();
+    });
+
+    // Auto-unlock if auth is still valid (< 12h)
+    if (isAuthValid()) {
+      unlockSite();
+    }
+  </script>
+</body>
+</html>
